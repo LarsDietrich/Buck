@@ -1,0 +1,14 @@
+*sublime-*
+.DS_Store
+**/.DS_Store
+.monitor
+**/.monitor
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+/node_modules
+**/node_modules
+/pids
+*.sock
+*.old
