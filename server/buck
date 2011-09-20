@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+
+var sys = require('sys'),
+	path = require('path'),
+	argv = require('optimist').argv;
+
+var help = [
+	"usage: buck [options]",
+	"",
+	"starts Buck",
+	"",
+	"options:",
+	"  -p             Port that you want the home server to run on      [8000]",
+	"  -h, --help     You're staring at it",
+].join('\n');
+
+if (argv.h || argv.help) {
+	return sys.puts(help);
+}
+
+var esIndex = 'buck';
+var options = {
+	port: argv.p || 1337
+};
+
+
+var buck = require('./main');
+
+buck.start(options,function(err,server){
+	if (err){
+		return sys.puts('Error starting Buck '+ err.message);
+	}
+
+	sys.puts('Buck ready to leak @ http://127.0.0.1:'+options.port);
+});

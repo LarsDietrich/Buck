@@ -1,0 +1,4 @@
+1) REST API with Node.JS
+2) Frontend with KnockoutJS
+3) CSS with cssLess
+4) die happy
