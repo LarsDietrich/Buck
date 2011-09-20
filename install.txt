@@ -19,3 +19,17 @@ curl http://npmjs.org/install.sh | sh
 #install modules
 npm install winston #logging
 npm install optimist #arg parse
+npm install journey #router
+npm install elasticsearchclient #elastic search client
+
+
+
+#install elasticsearch v0.15.0
+#download & extract 
+http://www.elasticsearch.org/download/2011/02/18/0.15.0.html
+#run like this
+./bin/elasticsearch -f -Des.network.host=127.0.0.1 -Des.discovery.zen.ping.multicast.address=127.0.0.1
+
+
+#run buck
+./server/buck
