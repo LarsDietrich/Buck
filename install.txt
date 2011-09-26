@@ -21,15 +21,28 @@ npm install winston #logging
 npm install optimist #arg parse
 npm install journey #router
 npm install elasticsearchclient #elastic search client
+npm install cradle #couchdb wrapper
 
+
+#install couchdb 0.11.0
+# http://wiki.apache.org/couchdb/Installation
 
 
 #install elasticsearch v0.15.0
 #download & extract 
-http://www.elasticsearch.org/download/2011/02/18/0.15.0.html
-#run like this
-./bin/elasticsearch -f -Des.network.host=127.0.0.1 -Des.discovery.zen.ping.multicast.address=127.0.0.1
+# http://www.elasticsearch.org/download/2011/02/18/0.15.0.html
 
+#install up river to integrate with couchdb
+/path/to/elasticsearch/bin/plugin -install river-couchdb
+
+#run elasticsearch like this
+/path/to/elasticsearch/bin/elasticsearch -f -Des.network.host=127.0.0.1 -Des.discovery.zen.ping.multicast.address=127.0.0.1
+
+#initialize database/elasticsearch
+php -f ./setup/buck_setup.php
 
 #run buck
-./server/buck
+./buck
+
+
+

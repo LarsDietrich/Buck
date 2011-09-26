@@ -10,7 +10,7 @@ var help = [
 	"starts Buck",
 	"",
 	"options:",
-	"  -p             Port that you want the home server to run on      [8000]",
+	"  -p             Port that you want the home server to run on      [80]",
 	"  -h, --help     You're staring at it",
 ].join('\n');
 
@@ -20,11 +20,11 @@ if (argv.h || argv.help) {
 
 var esIndex = 'buck';
 var options = {
-	port: argv.p || 1337
+	port: argv.p || 80
 };
 
 
-var buck = require('./main');
+var buck = require('./server/main');
 
 buck.start(options,function(err,server){
 	if (err){

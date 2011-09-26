@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Buck</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /> 
+	
+	<link rel="stylesheet" href="http://f.fontdeck.com/s/css/Gaw5TxJDiiEMYaqF8iLcIrFbPac/localhost/7263.css" type="text/css" />
+	<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+	<div class="container">
+		<div id="header">
+			<div class="twelve columns add-top">
+				<h1>Buck</h1>
+				<hr class="break" />
+				<div class="menu add-top add-bottom">
+					<div>
+						<a class="button left bucketsMode">Edit Buckets</a>
+						<a class="button middle active itemsMode">My Items</a>
+						<a class="button right itemAddMode">Add New Item</a>
+					</div>
+				</div>
+			</div>
+			<div class="four columns">
+				&nbsp;
+			</div>
+		</div>	
+		<hr class="break" />
+		<div class="pages add-top add-bottom">
+			<div id="buckets" class="sixteen columns add-top add-bottom" style="display: none;">
+				<div class="dynamic buckets">
+				</div>
+				<div class="bucket newBucket">
+					<h2>Create New Bucket</h2>
+					<label for="bucketName">Name</label>
+					<input name="bucketName" placeholder="New Bucket's Name" />
+					<label for="bucketDesc">Description</label>
+					<input name="bucketDesc" placeholder="New Bucket's Description" />
+					<label for="bucketMemberHandles">Members</label>
+					<input class="memberHandleTokens" name="bucketMemberHandles" />
+					<a class="save button">Add New Bucket</a>
+				</div>
+			</div>
+			<div id="items" class="sixteen columns add-top add-bottom" style="display: none;">
+				<input class="search" placeholder="Search..."/>
+				<br class="clear" />
+				<div class="add-top">
+					<div class="add">
+						<a class="add button">Add Item</a>
+					</div>
+				</div>
+				<br class="clear" />
+				<div class="dynamic items">
+				</div>
+			</div>
+			<div id="itemAdd" class="sixteen columns add-top add-bottom" style="display: none;">
+				<h2>Create New Item</h2>
+				<label for="itemName">Name(*)</label>
+				<input name="itemName" placeholder="New Item's Name" />
+				<label for="itemDesc">Description</label>
+				<input name="itemDesc" placeholder="New Item's Description" />
+				<label for="itemBucket">Bucket(*)</label>
+				<select name="itemBucket" class="dynamic"></select>
+				<label for="itemBucket">Hard Deadline (ex: tomorrow, next Tuesday, 2011-08-22T15:01Z, 1314028917, etc)</label>
+				<input name="hardDeadline" type="datetime" placeholder="New Item's Hard Deadline (ex: next tuesday, 2011-08-18 16:20:00, 1313652054, yesterday, etc)" />
+				<a class="save button">Add New Item</a>
+				<span class="help">* = required</span>
+			</div>
+		</div>
+		<hr class="break" />
+	</div><!-- container -->
+	
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.js"></script>
+	<script src="fn.js"></script>
+</body>
+</html>
