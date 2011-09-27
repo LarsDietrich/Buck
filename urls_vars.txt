@@ -1,0 +1,15 @@
+var url_variables = {
+	m: {
+		i: 'items view',
+		b: 'buckets view'
+	},
+	q: {
+		assert: function(){
+			return (m.val() === 'i')
+		},
+		'purpose': 'fulltext query'
+	}
+	itemId: 'single item',
+	bucketId: 'single bucket',
+	debug: 'disable js/css compression'
+};

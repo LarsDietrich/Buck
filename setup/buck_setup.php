@@ -76,16 +76,20 @@ echo 'creating es mappings'."\n";
 $es->map('member','{
 	"member": {
 		"properties": {
+			"_id": {
+				"type": "string", 
+				"store": "no"
+			},
+			"_rev": {
+				"type": "string", 
+				"store": "yes"
+			},
 			"handle": {
 				"type": "string", 
 				"store": "yes"
 			},
 			"name": {
 				"type": "string",
-				"store": "yes"
-			},
-			"level": {
-				"type": "integer",
 				"store": "yes"
 			}
 		}
@@ -95,6 +99,14 @@ $es->map('member','{
 $es->map('item','{
 	"item": {
 		"properties": {
+			"_id": {
+				"type": "string", 
+				"store": "no"
+			},
+			"_rev": {
+				"type": "string", 
+				"store": "yes"
+			},
 			"itemId": {
 				"type": "string", 
 				"store": "yes"
@@ -119,14 +131,14 @@ $es->map('item','{
 				"type": "integer",
 				"store": "yes"
 			},
-			"hardDeadline": {
-				"type": "integer",
-				"store": "yes"
-			},
 			"submitter": {
 				"type": "string",
 				"store": "yes"
 			},
+			"owner": {
+				"type": "string",
+				"store": "yes"
+			}
 			"bucketId": {
 				"type": "string",
 				"store": "yes"
@@ -138,6 +150,14 @@ $es->map('item','{
 $es->map('bucket','{
 	"bucket": {
 		"properties": {
+			"_id": {
+				"type": "string", 
+				"store": "no"
+			},
+			"_rev": {
+				"type": "string", 
+				"store": "yes"
+			},
 			"bucketId": {
 				"type": "string", 
 				"store": "yes"

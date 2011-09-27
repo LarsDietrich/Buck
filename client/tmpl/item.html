@@ -1,0 +1,16 @@
+<article id="item-(@= data.itemId @)" data-id="(@= data.itemId @)">
+	<div class="item (@= data.humanStatus @) row">
+		<div class="fourteen columns alpha itemMeta">
+			<h2>(@= data.name @)</h2>
+			<h3>in (@= data.bucketName @)</h3>
+			<p>(@= data.desc @)<!-- <br/>decays <abbr class="timeago" title="(@= data.decay @)">(@= data.decay @)</abbr>--></p>
+		</div>
+		<div class="one column offset-by-one omega itemAction">
+			<a class="button done">✔</a>
+			<a class="button escalate">⬆</a>
+			<a class="button deescalate">⬇</a>
+			<a class="button delay">⌚</a>
+		</div>
+		<br class="clear" />
+	</div>
+</article>

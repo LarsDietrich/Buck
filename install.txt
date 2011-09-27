@@ -22,6 +22,7 @@ npm install optimist #arg parse
 npm install journey #router
 npm install elasticsearchclient #elastic search client
 npm install cradle #couchdb wrapper
+npm install less #css less
 
 
 #install couchdb 0.11.0

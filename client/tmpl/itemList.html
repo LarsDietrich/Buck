@@ -1,0 +1,12 @@
+(@ $.each(data,function(status,items){ @)
+	<section id="items-(@= status @)">
+		(@ if (items.length) { @)
+			<div class="(@= status @)">
+				<h1>(@= status @)</h1>
+			    (@ items.forEach(function(item){ @)
+			        (@= item @)
+			    (@ }); @)   
+			</div>
+		(@ } @)
+    </section>
+(@ }); @)

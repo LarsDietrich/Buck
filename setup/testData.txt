@@ -1,0 +1,11 @@
+/api/buckets
+POST
+{"name":"buck bucket","desc":"bucket description","memberHandles":["dsp","sth"]}
+POST
+{"name":"another bucket","desc":"some bucket description","memberHandles":["dsp","lbu"]}
+..
+/items
+POST
+{"name":"some item","desc":"some description","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket__x19V"}
+POST
+{"name":"some item","desc":"some description","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_-SkxK"}

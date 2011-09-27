@@ -9,7 +9,26 @@ exports.createRouter = function(resources){
 		this.get('/').bind(function(req,res,params){
 			fs.readFile('client/index.html','utf-8',function(err,data){
 				if (err){return res.send(500,{},{error:err});}
-				res.baseResponse.headers = {'Content-Type':'text/html'}; //hack to send actual html headers
+				res.baseResponse.headers = {'Content-Type':'text/html'};
+				res.sendBody(data);
+			});
+		});
+	});
+	router.path('/tmpl',function(){
+		this.get(/([a-zA-Z0-9_-]+)\.html/).bind(function(req,res,template,params){
+			fs.readFile('client/tmpl/'+template+'.html','utf-8',function(err,data){
+				if (err){return res.send(500,{},{error:err});}
+				res.baseResponse.headers = {'Content-Type':'text/html'};
+				res.sendBody(data);
+			});
+		}); 
+	});
+	router.path('/login',function(){
+		//GET /login
+		this.get().bind(function(req,res,params){
+			fs.readFile('client/login.html','utf-8',function(err,data){
+				if (err){return res.send(500,{},{error:err});}
+				res.baseResponse.headers = {'Content-Type':'text/html'};
 				res.sendBody(data);
 			});
 		});
@@ -19,7 +38,7 @@ exports.createRouter = function(resources){
 		this.get().bind(function(req,res,params){
 			style.getCss(function(err,data){
 				if (err){return res.send(500,{},{error:err});}
-				res.baseResponse.headers = {'Content-Type':'text/html'}; //hack to send actual html headers
+				res.baseResponse.headers = {'Content-Type':'text/css'};
 				res.sendBody(data);
 			});
 		});
@@ -27,9 +46,29 @@ exports.createRouter = function(resources){
 	router.path('/fn.js',function(){
 		//GET /fn.js
 		this.get().bind(function(req,res,params){
-			fs.readFile('client/fn.js','utf-8',function(err,data){
+			fs.readFile('client/js/fn.js','utf-8',function(err,data){
 				if (err){return res.send(500,{},{error:err});}
-				res.baseResponse.headers = {'Content-Type':'text/html'}; //hack to send actual html headers
+				res.baseResponse.headers = {'Content-Type':'application/javascript'};
+				res.sendBody(data);
+			});
+		});
+	});
+	router.path('/jq.js',function(){
+		//GET /jq.js
+		this.get().bind(function(req,res,params){
+			fs.readFile('client/js/jq.js','utf-8',function(err,data){
+				if (err){return res.send(500,{},{error:err});}
+				res.baseResponse.headers = {'Content-Type':'application/javascript'};
+				res.sendBody(data);
+			});
+		});
+	});
+	router.path('/plug.js',function(){
+		//GET /plug.js
+		this.get().bind(function(req,res,params){
+			fs.readFile('client/js/plug.js','utf-8',function(err,data){
+				if (err){return res.send(500,{},{error:err});}
+				res.baseResponse.headers = {'Content-Type':'application/javascript'};
 				res.sendBody(data);
 			});
 		});
@@ -40,7 +79,7 @@ exports.createRouter = function(resources){
 			this.get().bind(function(req,res,params){
 				resources.bucket.list(function(err,buckets){
 					if (err){return res.send(500,{},{error:err});}
-					res.send(200,{},{buckets:buckets});
+					res.send(200,{},buckets);
 				});
 			});
 			//GET /buckets/:id
@@ -78,7 +117,7 @@ exports.createRouter = function(resources){
 			this.get().bind(function(req,res,params){
 				resources.item.list(function(err,items){
 					if (err){return res.send(500,{},{error:err});}
-					res.send(200,{},{items:items});
+					res.send(200,{},items);
 				});
 			});
 			//GET /items/:id
@@ -90,9 +129,9 @@ exports.createRouter = function(resources){
 			});
 			//POST /items
 			this.post().bind(function(req,res,item){
-				resources.item.create(item,function(err,res){
+				resources.item.create(item,function(err,result){
 					if (err){return res.send(500,{},{error:err});}
-					res.send(200,{},{bookmark:res});
+					res.send(200,{},{item:result});
 				});
 			});
 			//PUT /items/:id
@@ -116,7 +155,7 @@ exports.createRouter = function(resources){
 			this.get().bind(function(req,res,params){
 				resources.member.list(function(err,members){
 					if (err){return res.send(500,{},{error:err});}
-					res.send(200,{},{members:members});
+					res.send(200,{},members);
 				});
 			});
 			//GET /members/:id

@@ -1,4 +1,5 @@
-var common = require('./common');
+var common = require('./common'),
+	helpers = require('./helpers');
 
 var Item = exports.Item = function(db,es) {
 	this.db = db;
