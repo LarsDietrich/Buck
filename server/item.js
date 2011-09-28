@@ -28,7 +28,7 @@ Item.prototype.list = function(cb) {
 	})
 		.on('data',function(data){
      		data = JSON.parse(data);
-     		if ( data.hits.total > 0 ) {
+     		if ( !data.error && data.hits.total > 0 ) {
      			_data = data.hits.hits;
 				_data = _data.map(function(elem){return elem._source;});
      		}
@@ -65,7 +65,7 @@ Item.prototype.show = function(id,cb) {
 	})
 		.on('data',function(data){
 			data = JSON.parse(data);
-     		 if ( data.hits.total == 1 ) {
+     		 if ( !data.error && data.hits.total == 1 ) {
      		 	_data = data.hits.hits[0]._source;
      		 }
 		})
@@ -110,7 +110,14 @@ Item.prototype.destroy = function(id,cb) {
 			if (err) {
 				return cb(err);
 			}
-			cb(null,true);
+			that.es.deleteDocument(common.esIndex,'item',id)
+				.on('done',function(){
+					cb(null,true);
+				})
+				.on('error',function(err){
+					cb(err);
+				})
+				.exec();
 		});
 	});
 };

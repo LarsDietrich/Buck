@@ -1,12 +1,10 @@
 (@ $.each(data,function(status,items){ @)
 	<section id="items-(@= status @)">
-		(@ if (items.length) { @)
-			<div class="(@= status @)">
-				<h1>(@= status @)</h1>
-			    (@ items.forEach(function(item){ @)
-			        (@= item @)
-			    (@ }); @)   
-			</div>
-		(@ } @)
+		<h1 class="sixteen columns row (@= (items.length&&status!=="decayed"&&status!=="deleted"&&status!=="notyours")?"open":"closed" @)">(@= status @) <span>((@= items.length@))</span></h1>
+		<div class="items (@= status @)">
+		    (@ items.forEach(function(item){ @)
+		        (@= item @)
+		    (@ }); @)   
+		</div>
     </section>
 (@ }); @)

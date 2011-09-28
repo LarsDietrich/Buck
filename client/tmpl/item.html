@@ -1,16 +1,64 @@
-<article id="item-(@= data.itemId @)" data-id="(@= data.itemId @)">
-	<div class="item (@= data.humanStatus @) row">
-		<div class="fourteen columns alpha itemMeta">
-			<h2>(@= data.name @)</h2>
-			<h3>in (@= data.bucketName @)</h3>
-			<p>(@= data.desc @)<!-- <br/>decays <abbr class="timeago" title="(@= data.decay @)">(@= data.decay @)</abbr>--></p>
+(@ 
+var itemClass = "sixteen columns",
+	metaClass = "fourteen columns alpha",
+	actionClass = "two columns omega";
+if ( data.status === 0 || data.status === 5 || data.status === 1 ) {
+	itemClass = "four columns";
+
+	var mod = (data.ctr%4);
+	if ( mod === 0 ) {
+		itemClass += " alpha";
+	} else if ( mod === 3 ) {
+		itemClass += " omega";
+	}
+
+	metaClass = "alpha";
+	actionClass = "omega";
+} else if ( data.status === 2 ) {
+	itemClass = "one-third column";
+
+	var mod = (data.ctr%3);
+	if ( mod === 0 ) {
+		itemClass += " alpha";
+	} else if ( mod === 2 ) {
+		itemClass += " omega";
+	}
+
+	metaClass = "";
+	actionClass = "";	
+} else if ( data.status === 3 ) {
+	itemClass = "eight columns";
+
+	var mod = (data.ctr%2);
+	if ( mod === 0 ) {
+		itemClass += " alpha";
+	} else if ( mod === 1 ) {
+		itemClass += " omega";
+	}
+
+	metaClass = "eight columns";
+	actionClass = "eight columns";	
+}
+@)
+<article id="item-(@= data.itemId @)">
+	<div class="item (@= data.humanStatus @) (@= itemClass @)" data-id="(@= data.itemId @)">
+		<div class="(@= metaClass @) itemMeta">
+			<h2 (@ if (data.humanStatus!=="incoming"&&data.humanStatus!=="deleted"&&data.humanStatus!=="decayed"&&data.humanStatus!=="notyours"&&data.humanStatus!=="done"){ @)class="editable-itemname" title="Click to edit title"(@ } @)>(@= data.name @)</h2>
+			<div class="desc">
+				<p><span class="editable-itemdesc" title="Click to edit description">(@= data.desc @)</span> // by <span class="meta">(@= data.submitter @)</span> in <span class="meta">(@= data.bucketName @)</span></p> 
+			</div>
 		</div>
-		<div class="one column offset-by-one omega itemAction">
-			<a class="button done">✔</a>
-			<a class="button escalate">⬆</a>
-			<a class="button deescalate">⬇</a>
-			<a class="button delay">⌚</a>
+		<div class="(@= actionClass @) itemAction">
+			<div>
+				<a class="done button" title="Click to mark item as done">y</a>
+				<a class="escalate button" title="Click to escalate item">3</a>
+			</div>
+			<div >
+				<a class="deescalate button" title="Click to de-escalate item">5</a>
+				<a class="delay button button" title="Click to push decay by one day">c</a>
+			</div>
 		</div>
 		<br class="clear" />
+		(@ if (data.humanStatus!=="deleted"&&data.humanStatus!=="notyours"&&data.humanStatus!=="done"&&data.humanStatus!=="decayed"){ @)<div class="delete button">x</div>(@ } @)
 	</div>
 </article>

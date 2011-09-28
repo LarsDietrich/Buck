@@ -6,6 +6,16 @@ POST
 ..
 /items
 POST
-{"name":"some item","desc":"some description","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket__x19V"}
+{"name":"Bucket List","desc":"ability to list buckets","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_NcAHq"}
 POST
-{"name":"some item","desc":"some description","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_-SkxK"}
+{"name":"Bucket Add","desc":"ability to add a bucket","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_NcAHq"}
+POST
+{"name":"Bucket Edit","desc":"ability to change a bucket","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_NcAHq"}
+POST
+{"name":"Bucket Delete","desc":"ability to delete a bucket","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_NcAHq"}
+POST
+{"name":"Item Add","desc":"ability to add an item","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_NcAHq"}
+POST
+{"name":"Item Bucket Change","desc":"ability to change an item's bucket","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_NcAHq"}
+POST
+{"name":"Hashtag URLs","desc":"linkable urls","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_NcAHq"}

@@ -29,9 +29,9 @@ npm install less #css less
 # http://wiki.apache.org/couchdb/Installation
 
 
-#install elasticsearch v0.15.0
+#install elasticsearch v0.17.7
 #download & extract 
-# http://www.elasticsearch.org/download/2011/02/18/0.15.0.html
+# http://www.elasticsearch.org/
 
 #install up river to integrate with couchdb
 /path/to/elasticsearch/bin/plugin -install river-couchdb

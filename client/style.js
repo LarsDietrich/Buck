@@ -3,23 +3,18 @@ var fs = require('fs');
 
 module.exports = {
 	getCss: function(cb){ 
-		function addLess(err,dat) {
-			if ( err ) {
-				console.log(err);
-				return; 
-			}
-			var parser = new(less.Parser);
+		var parser = new(less.Parser);
 
-			fs.readFile('client/css/bottom.less','utf-8',function(err,data){
-				if (err){return cb(err);}
-				parser.parse(data, function (err, tree) {
-				    if (err) { return cb(err) }
-				    cb(null,dat+"\n"+tree.toCSS({compress:false}));
+		fs.readFile('client/css/bottom.less','utf-8',function(fsErr,lessData){
+			if (fsErr){console.log(fsErr); return cb(fsErr);}
+			fs.readFile('client/css/skeleton.css','utf-8',function(fsErrTwo,cssData){
+				if (fsErrTwo){console.log(fsErrTwo); return cb(fsErrTwo);}
+				parser.parse(cssData+lessData, function (err, tree) {
+				    if (err) { console.log(err); return cb(err) }
+				    cb(null,tree.toCSS({compress:false}));
 				});
 			});
-		}
-
-		fs.readFile('client/css/skeleton.css','utf-8',function(err,data){addLess(err,data)});
+		}); 		
 	}
 };
 

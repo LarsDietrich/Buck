@@ -19,6 +19,17 @@ $designs = json_encode(
 		)
 	)
 );
+$designs = <<<A
+{
+"_id":"_design\/buck",
+"filters":{
+"all":"function(doc,req){return true;}",
+"buckets":"function(doc,req){if(doc.resource==='Bucket'){return true;}return false;}",
+"items":"function(doc,req){if(doc.resource==='Item'){return true;}return false;}",
+"members":"function(doc,req){if(doc.resource==='Member'){return true;}return false;}"
+}
+}
+A;
 var_dump($couch->send('POST','/buck',$designs)); 
 
 echo 'deleting es/buck'."\n";
@@ -45,6 +56,7 @@ echo `curl -XPUT 'http://localhost:9200/_river/bucket/_meta' -d '{
     	"type" : "bucket"
     }
 }'`;
+
 echo `curl -XPUT 'http://localhost:9200/_river/item/_meta' -d '{ 
     "type" : "couchdb", 
     "couchdb" : { 

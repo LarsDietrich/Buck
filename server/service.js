@@ -14,6 +14,16 @@ exports.createRouter = function(resources){
 			});
 		});
 	});
+	router.path('/f',function(){
+		//GET /f/adelle-:weight.:extension
+		this.get(/adelle_(light|regular|bold).(eot|woff|ttf)/).bind(function(req,res,weight,extension,params){
+			fs.readFile('client/fonts/adelle_'+weight+'.'+extension,'utf-8',function(err,data){
+				if (err){return res.send(500,{},{error:err});}
+				res.baseResponse.headers = {'Content-Type':'font/ttf'};
+				res.sendBody(data);
+			});
+		});
+	});
 	router.path('/tmpl',function(){
 		this.get(/([a-zA-Z0-9_-]+)\.html/).bind(function(req,res,template,params){
 			fs.readFile('client/tmpl/'+template+'.html','utf-8',function(err,data){
@@ -136,7 +146,9 @@ exports.createRouter = function(resources){
 			});
 			//PUT /items/:id
 			this.put(/\/([a-zA-Z0-9_-]+)/).bind(function(req,res,itemId,item){
-				resources.item.update(itemId,item,function(err,res){
+				console.log(itemId);
+				console.log(item);
+				resources.item.update(itemId,item,function(err,updated){
 					if (err){return res.send(500,{},{error:updated});}
 					res.send(200,{},{updated:updated});
 				});

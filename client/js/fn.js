@@ -24,11 +24,13 @@ Client.prototype = {
         window.location.href = '/login';
     },
     request: function(type,method,data,success) {
-        var that = this;
-        var url = this.apiUrl+type;
-        var requestParams = {
+        var that = this,
+            url = this.apiUrl+type,
+            requestParams = {
             url: url,
             type: method,
+            contentType: 'application/json',
+            dataType: 'json',
             success: function(result) {
                 success(result);
             },
@@ -38,18 +40,21 @@ Client.prototype = {
                 }
             }
         };
-        if ( data != null && method != 'GET' ) {
-            $.extend(requestParams,{
-                processData: false,
-                data: JSON.stringify(data)
-            });
-        } else if ( data != null && method == 'GET' ) {
-            if ( requestParams.url.indexOf('?') == -1 ) {
-                requestParams.url += '?';
-            } else {
-                requestParams.url += '&';
+        if ( data !== null ) {
+            if ( method === 'POST' || method === 'PUT' ) {
+                $.extend(requestParams,{
+                    processData: false,
+                    data: JSON.stringify(data)
+                });
+            } else if ( method === 'GET' ) {
+                requestParams.processData = true;
+                //if ( requestParams.url.indexOf('?') === -1 ) {
+                //    requestParams.url += '?';
+                //} else {
+                //    requestParams.url += '&';
+                //}
+                //requestParams.url += +data.join('&');
             }
-            requestParams.url += +data.join('&');
         }
         $.ajax(requestParams);
     },
@@ -62,9 +67,9 @@ Client.prototype = {
     put: function(type,data,success) {
         this.request(type,'PUT',data,success);
     },
-    delete: function(type,success) {
+    del: function(type,success) {
         this.request(type,'DELETE',null,success);
-    },
+    }
 };
 
 function Utils() {
@@ -93,36 +98,33 @@ Utils.prototype = {
     },
     isoDate: function(timestamp){
         var d = new Date(timestamp);
-        function pad(n){return n<10 ? '0'+n : n}
+        function pad(n){return n<10 ? '0'+n : n;}
         return d.getUTCFullYear()+'-'
             + pad(d.getUTCMonth()+1)+'-'
             + pad(d.getUTCDate())+'T'
             + pad(d.getUTCHours())+':'
             + pad(d.getUTCMinutes())+':'
-            + pad(d.getUTCSeconds())+'Z'
+            + pad(d.getUTCSeconds())+'Z';
     },
     humanStatus: function(status) {
         switch (status) {
             case 0:
                 return 'deleted';
-            break;
             case 1:
                 return 'decayed';
-            break;
             case 2:
                 return 'incoming';
-            break;
             case 3:
                 return 'accepted';
-            break;
             case 4:
                 return 'current';
-            break;
             case 5:
                 return 'done';
-            break;
         }
         return 'incoming';
+    },
+    currentUser: function() {
+        return 'dsp';
     }
 };
 
@@ -140,8 +142,6 @@ Storage.prototype = {
         this.membersTime = 0;
     },
     reload: function(cb) {
-        var that = this;
-
         this.doneCb = cb;
         this.parallelCalls = 3;
 
@@ -157,18 +157,33 @@ Storage.prototype = {
             this.doneCb = cb;
             this.parallelCalls = 1;
         }
-        if ( ((new Date().getTime())-that.bucketsTime) > this.maxAge ) {
+        if ( ((new Date().getTime())-this.bucketsTime) > this.maxAge ) {
             this.client.get('buckets',null,function(data){
                 that.buckets = {};
-                data.forEach(function(bucket,i){
-                    this.buckets[bucket.bucketId] = bucket;
-                },that);
+                if ( data ) {
+                    data.forEach(function(bucket){
+                        this.buckets[bucket.bucketId] = bucket;
+                    },that);
+                }
                 that.bucketsTime = new Date().getTime();
                 that.fakeParallel();
-            }); 
+            });
         } else {
             this.fakeParallel();
         }
+    },
+    getBucket: function(bucketId) {
+        return this.buckets[bucketId];
+    },
+    setBucket: function(bucketId,bucket,cb) {
+        this.buckets[bucketId] = bucket;
+        cb();
+        this.client.put('buckets/'+bucketId,bucket,function(result){});
+    },
+    removeBucket: function(bucketId,cb) {
+        delete this.buckets[bucketId];
+        cb();
+        this.client.del('buckets/'+bucketId,function(result){});
     },
     reloadItems: function(cb) {
         var that = this;
@@ -177,18 +192,33 @@ Storage.prototype = {
             this.doneCb = cb;
             this.parallelCalls = 1;
         }
-        if ( ((new Date().getTime())-that.itemsTime) > this.maxAge ) {
+        if ( ((new Date().getTime())-this.itemsTime) > this.maxAge ) {
             this.client.get('items',null,function(data){
                 that.items = {};
-                data.forEach(function(item,i){
-                    this.items[item.itemId] = item;
-                },that);
+                if ( data ) {
+                    data.forEach(function(item){
+                        this.items[item.itemId] = item;
+                    },that);
+                }
                 that.itemsTime = new Date().getTime();
                 that.fakeParallel();
             });
         } else {
             this.fakeParallel();
         }
+    },
+    getItem: function(itemId) {
+        return this.items[itemId];
+    },
+    setItem: function(itemId,item,cb) {
+        this.items[itemId] = item;
+        cb();
+        this.client.put('items/'+itemId,item,function(result){});
+    },
+    removeItem: function(itemId,cb) {
+        delete this.items[itemId];
+        cb();
+        this.client.del('items/'+itemId,function(result){});
     },
     reloadMembers: function(cb) {
         var that = this;
@@ -197,12 +227,14 @@ Storage.prototype = {
             this.doneCb = cb;
             this.parallelCalls = 1;
         }
-        if ( ((new Date().getTime())-that.membersTime) > this.maxAge ) {
+        if ( ((new Date().getTime())-this.membersTime) > this.maxAge ) {
             this.client.get('members',null,function(data){
                 that.members = {};
-                data.forEach(function(member,i){
-                    this.members[member.handle] = member;
-                },that);
+                if ( data ) {
+                    data.forEach(function(member){
+                        this.members[member.handle] = member;
+                    },that);
+                }
                 that.membersTime = new Date().getTime();
                 that.fakeParallel();
             });
@@ -210,37 +242,15 @@ Storage.prototype = {
             this.fakeParallel();
         }
     },
+    getMember: function(memberId) {
+        return this.members[memberId];
+    },
     fakeParallel: function() {
         if ( ++this.ctr === parseInt(this.parallelCalls,10) ) {
             this.doneCb();
         }
     }
-}
-
-
-function Core(cb) {
-    this.init(cb);
-}
-Core.prototype = {
-    init: function(cb) {
-        var that = this;
-
-        this.client = new Client();
-        this.utils = new Utils();
-        this.storage = new Storage(this.client);
-        this.ui = {};
-        this.storage.reload(function(){
-            that.ui = new UI(that.storage,that.utils);
-            cb();
-        });
-    }
-}
-
-$(function(){
-    var Buck = new Core(function(){
-        Buck.ui.switchMode('items',function(){});
-    });
-});
+};
 
 function UI(storage,utils) {
     this.init(storage,utils);
@@ -249,6 +259,15 @@ UI.prototype = {
     init: function(storage,utils) {
         $.timeago.settings.allowFuture = true; //allow future dates
         $.timeago.settings.refreshMillis = 10000; //refresh times every 10 seconds
+
+        $.inlineEdit.defaults.hover = 'editable-hover';
+        $.inlineEdit.defaults.cancelOnBlur = false;
+        $.inlineEdit.defaults.buttons = '<button class="save">Save</button> <button class="cancel">Cancel</button>';
+
+        $.fn.twipsy.defaults.animate = false;
+        $.fn.twipsy.defaults.delayIn = 100;
+        $.fn.twipsy.defaults.delayOut = 0;
+
         this.utils = utils;
         this.storage = storage;
 
@@ -260,7 +279,7 @@ UI.prototype = {
         this.tokenInputOptions = {
             theme: 'facebook',
             searchDelay: 100,
-            _className: 'token-input-list-facebook'
+            '_className': 'token-input-list-facebook'
         };
     },
     getTmpl: function(template,cb) {
@@ -277,7 +296,6 @@ UI.prototype = {
     },
     parse: function(template) {
         var body = "var out = ''; out+=" + "'" +
-    
         template.replace( /[\r\t\n]/g, " " )
             .replace( /'(?=[^@]*@!\))/g, "\t" )
             .split( "'" ).join( "\\' ")
@@ -304,17 +322,16 @@ UI.prototype = {
         $('.dynamic').html(''); //remove all dynamically requested content
         $('.'+this.tokenInputOptions._className).remove(); //remove tokeninputs
         $('section').hide(); //hide all sections
-        
     },
     switchMode: function(mode,cb) {
         var that = this;
-        if ( mode == 'buckets' ) {
+        if ( mode === 'buckets' ) {
             this.storage.reloadBuckets(function(){
                 that.beforeSwitch();
                 that.bucketsMode();
                 cb();
             });
-        } else if ( mode == 'items' ) {
+        } else if ( mode === 'items' ) {
             this.storage.reloadItems(function(){
                 that.beforeSwitch();
                 that.itemsMode();
@@ -323,28 +340,149 @@ UI.prototype = {
         }
     },
     itemsMode: function() {
-        $('#items').show();
-        this.drawItems();
-    },
-    drawItems: function() {
         var that = this;
-        this.storage.reloadItems(function(){
+        this.drawItems(function(){
+            $('#items h1').each(function(e){
+                if ( $(this).hasClass('open') ) {
+                    $(this).closest('section').children('div').show();
+                } else {
+                    $(this).closest('section').children('div').hide();
+                }
+            });
+            $('#items').show();
+            that.itemLiveBinds();
+            that.itemBinds();
+        });
+    },
+    itemLiveBinds: function() {
+        var that = this;
+        $('.search').live('keyup keydown focus blur',function(){
+            if ( $(this).val() !== '' ) {
+                var t = $(this).val();
+                if ( t.length === 1 ) { 
+                    $('.itemsMenu').text('y Items');
+                } else if ( t.length === 2 ) { 
+                    $('.itemsMenu').text('Items');
+                }
+            } else {
+                $('.itemsMenu').text('My Items');
+            }
+        });
+        $('.escalate.button').live('click',function(){
+            var $item = $(this).closest('.item'),
+                itemId = $item.attr('data-id'),
+                item = that.storage.getItem(itemId);
+            item.status++;
+            if ( item.status >= 3 ) {
+                item.owner = that.utils.currentUser();
+            }
+            that.storage.setItem(itemId,item,function(){
+                console.log($item);
+                $item.css('opacity',0.3);
+                that.drawItems(function(){});
+            });
+        });
+        $('.deescalate.button').live('click',function(){
+            var $item = $(this).closest('.item'),
+                itemId = $item.attr('data-id'),
+                item = that.storage.getItem(itemId);
+            item.status--;
+            if ( item.status < 3 ) {
+                item.owner = '';
+            }
+            that.storage.setItem(itemId,item,function(){
+                $item.css('opacity',0.3);
+                that.drawItems(function(){});
+            });
+        });
+        $('.delete.button').live('click',function(){
+            var $item = $(this).closest('.item'),
+                itemId = $item.attr('data-id'),
+                item = that.storage.getItem(itemId);
+            if ( confirm('Are you sure you want to delete '+item.name+'?') ) {
+                that.storage.removeItem(itemId,function(){
+                    $item.css('opacity',0.3);
+                    that.drawItems(function(){});
+                });
+            }
+        });
+        $('#items h1').live('click',function(e){
+            e.preventDefault();
+            e.stopPropagation();
+
+            if ( $(this).hasClass('open') ) {
+                $(this).removeClass('open').addClass('closed');
+            } else {
+                $(this).removeClass('closed').addClass('open');
+            }
+            $(this).closest('section').children('div').slideToggle('fast');
+        });
+    },
+    itemBindsUnbind: function() {
+        $('.itemAction .button.done, .itemAction .button.escalate, .itemAction .button.delay, .itemAction .button.deescalate, .editable-itemname, .editable-itemdesc').unbind();
+    },
+    itemBinds: function() {
+        var that = this;
+        $('.itemAction .button.done, .itemAction .button.escalate').twipsy();
+        $('.itemAction .button.delay, .itemAction .button.deescalate').twipsy({placement:'below'});
+        $('.editable-itemname').twipsy();
+        $('.editable-itemname').inlineEdit({
+            save: function(e,data) {
+                var itemId = $(this).closest('.item').attr('data-id'),
+                    item = that.storage.getItem(itemId);
+                item.name = data.value;
+                that.storage.setItem(itemId,item,function(){});
+            }
+        });
+        $('.editable-itemdesc').twipsy({
+            placement: 'below'
+        });
+        $('.editable-itemdesc').inlineEdit({
+            control: 'textarea',
+            save: function(e,data) {
+                var itemId = $(this).closest('.item').attr('data-id'),
+                    item = that.storage.getItem(itemId);
+                item.desc = data.value;
+                that.storage.setItem(itemId,item,function(){});
+            }
+        });
+    },
+    drawItems: function(cb,reload) {
+        var that = this,
+            loadItems = function(cb){cb();};
+        $('.twipsy').remove();
+        if ( typeof(reload) !== 'undefined' ) {
+            loadItems = this.storage.reloadItems;
+        }
+        loadItems(function(){
             that.getTmpl('item',function(anItem){
                 that.getTmpl('itemList',function(itemListTmpl){
                     that.tempItems = {
                         current: [],
                         accepted: [],
+                        notyours: [],
                         incoming: [],
                         decayed: [],
                         done: [],
                         deleted: []
                     };
+                    var ctr = 0;
                     $.each(that.storage.items,function(i,item){
-                        item.bucketName = that.storage.buckets[item.bucketId].name;
+                        var bucket = that.storage.getBucket(item.bucketId);
+                        item.bucketName = bucket.name;
                         item.humanStatus = that.utils.humanStatus(item.status);
-                        that.tempItems[item.humanStatus].push(anItem(item));
+                        item.ctr = ctr++;
+                        if ( ( item.status === 3 || item.status === 4 ) && (item.owner !== that.utils.currentUser()) ) {
+                            that.tempItems.notyours.push(anItem(item));
+                        } else {
+                            that.tempItems[item.humanStatus].push(anItem(item));
+                        }
                     });
+                    $('.dynamic.items').html('');
                     $('.dynamic.items').html(itemListTmpl(that.tempItems));
+                    that.itemBindsUnbind();
+                    that.itemBinds();
+                    cb();
                 });
             });
         });
@@ -352,4 +490,28 @@ UI.prototype = {
     bucketsMode: function() {
         $('#buckets').show();
     }
+};
+
+function Core(cb) {
+    this.init(cb);
 }
+Core.prototype = {
+    init: function(cb) {
+        var that = this;
+
+        this.client = new Client();
+        this.utils = new Utils();
+        this.storage = new Storage(this.client);
+        this.ui = {};
+        this.storage.reload(function(){
+            that.ui = new UI(that.storage,that.utils);
+            cb();
+        });
+    }
+}
+
+$(function(){
+    var Buck = new Core(function(){
+        Buck.ui.switchMode('items',function(){});
+    });
+});

@@ -28,7 +28,7 @@ Bucket.prototype.list = function(cb) {
 	})
 		.on('data',function(data){
      		data = JSON.parse(data);
-     		if ( data.hits.total > 0 ) { 
+     		if ( !data.error && data.hits.total > 0 ) { 
      			_data = data.hits.hits;
 				_data = _data.map(function(elem){return elem._source;});
      		}
@@ -65,8 +65,7 @@ Bucket.prototype.show = function(id,cb) {
 	})
 		.on('data',function(data){
 			data = JSON.parse(data);
-			console.log(data);
-     		 if ( data.hits.total == 1 ) {
+     		 if ( !data.error && data.hits.total == 1 ) {
      		 	_data = data.hits.hits[0]._source;
      		 }
 		})
@@ -105,13 +104,21 @@ Bucket.prototype.destroy = function(id,cb) {
 	this.show(id,function(err,doc){
 		if (err) {
 			return cb(err);
+		} else if (typeof(doc)==='undefined') {
+			return cb(err);
 		}
-console.log(doc);
 		that.db.remove(id,doc._rev,function(err,res){
 			if (err) {
 				return cb(err);
 			}
-			cb(null,true);
+			that.es.deleteDocument(common.esIndex,'bucket',id)
+				.on('done',function(){
+					cb(null,true);
+				})
+				.on('error',function(err){
+					cb(err);
+				})
+				.exec();
 		});
 	});
 };
