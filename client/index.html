@@ -24,10 +24,21 @@
 
 		<section id="items">
 			<input name="q" type="search" class="search" placeholder="Search for anything" />
+			<br class="clear" />
+			<div class="itemAdd"><a href="#" class="button" title="Click to add new item">+</a></div>
+			<div class="four columns offset-by-eleven">
+				<div class="itemAddDialog">
+					<input name="itemName" placeholder="Name" />
+					<input name="itemBucket" class="bucketToken" placeholder="Bucket"/>
+					<a class="button">Save Item</a>
+				</div>
+			</div>
+			<br class="clear" />
 			<div class="items dynamic row"></div>
 		</section>
 		<br class="clear" />
 	</div><!-- /container -->
+	<b class="iconic" style="display: none;">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_</b>
 	<script src="/jq.js"></script>
 	<script src="/plug.js"></script>
 	<script src="/fn.js"></script>

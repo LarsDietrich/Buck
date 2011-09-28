@@ -47,13 +47,13 @@ Client.prototype = {
                     data: JSON.stringify(data)
                 });
             } else if ( method === 'GET' ) {
-                requestParams.processData = true;
-                //if ( requestParams.url.indexOf('?') === -1 ) {
-                //    requestParams.url += '?';
-                //} else {
-                //    requestParams.url += '&';
-                //}
-                //requestParams.url += +data.join('&');
+                if ( requestParams.url.indexOf('?') === -1 ) {
+                   requestParams.url += '?';
+                } else {
+                   requestParams.url += '&';
+                }
+                // requestParams.url += data.join('&');
+                requestParams.url += $.param(data,true);
             }
         }
         $.ajax(requestParams);
@@ -377,7 +377,6 @@ UI.prototype = {
                 item.owner = that.utils.currentUser();
             }
             that.storage.setItem(itemId,item,function(){
-                console.log($item);
                 $item.css('opacity',0.3);
                 that.drawItems(function(){});
             });
@@ -408,14 +407,13 @@ UI.prototype = {
         });
         $('#items h1').live('click',function(e){
             e.preventDefault();
-            e.stopPropagation();
 
             if ( $(this).hasClass('open') ) {
                 $(this).removeClass('open').addClass('closed');
             } else {
                 $(this).removeClass('closed').addClass('open');
             }
-            $(this).closest('section').children('div').slideToggle('fast');
+            $(this).closest('section').children('div').toggle();
         });
     },
     itemBindsUnbind: function() {
@@ -424,7 +422,7 @@ UI.prototype = {
     itemBinds: function() {
         var that = this;
         $('.itemAction .button.done, .itemAction .button.escalate').twipsy();
-        $('.itemAction .button.delay, .itemAction .button.deescalate').twipsy({placement:'below'});
+        $('.itemAction .button.delay, .itemAction .button.deescalate, .itemAdd > a').twipsy({placement:'below'});
         $('.editable-itemname').twipsy();
         $('.editable-itemname').inlineEdit({
             save: function(e,data) {
@@ -500,6 +498,11 @@ Core.prototype = {
         var that = this;
 
         this.client = new Client();
+
+console.log(this.client.get('buckets',{q:'asdf',a:'asdf'},function(data){
+                console.log(data);
+            }));
+
         this.utils = new Utils();
         this.storage = new Storage(this.client);
         this.ui = {};

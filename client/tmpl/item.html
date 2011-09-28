@@ -1,43 +1,55 @@
 (@ 
 var itemClass = "sixteen columns",
 	metaClass = "fourteen columns alpha",
-	actionClass = "two columns omega";
+	actionClass = "two columns omega add-top",
+	firstButtonClass = "",
+	secondButtonClass = "",
+	brk = "";
 if ( data.status === 0 || data.status === 5 || data.status === 1 ) {
 	itemClass = "four columns";
 
 	var mod = (data.ctr%4);
 	if ( mod === 0 ) {
 		itemClass += " alpha";
+		brk = "<br class=clear />";
 	} else if ( mod === 3 ) {
 		itemClass += " omega";
 	}
 
 	metaClass = "alpha";
 	actionClass = "omega";
+	firstButtonClass = "";
+	secondButtonClass = "";
 } else if ( data.status === 2 ) {
 	itemClass = "one-third column";
 
 	var mod = (data.ctr%3);
 	if ( mod === 0 ) {
 		itemClass += " alpha";
+		brk = "<br class=clear />";
 	} else if ( mod === 2 ) {
 		itemClass += " omega";
 	}
 
 	metaClass = "";
 	actionClass = "";	
+	firstButtonClass = "one-sixth column alpha";
+	secondButtonClass = "one-sixth column omega";
 } else if ( data.status === 3 ) {
 	itemClass = "eight columns";
 
 	var mod = (data.ctr%2);
 	if ( mod === 0 ) {
 		itemClass += " alpha";
+		brk = "<br class=clear />";
 	} else if ( mod === 1 ) {
 		itemClass += " omega";
 	}
 
-	metaClass = "eight columns";
-	actionClass = "eight columns";	
+	metaClass = "";
+	actionClass = "";	
+	firstButtonClass = "four columns alpha";
+	secondButtonClass = "four columns omega";
 }
 @)
 <article id="item-(@= data.itemId @)">
@@ -49,11 +61,11 @@ if ( data.status === 0 || data.status === 5 || data.status === 1 ) {
 			</div>
 		</div>
 		<div class="(@= actionClass @) itemAction">
-			<div>
+			<div class="(@= firstButtonClass @)">
 				<a class="done button" title="Click to mark item as done">y</a>
 				<a class="escalate button" title="Click to escalate item">3</a>
 			</div>
-			<div >
+			<div class="(@= secondButtonClass @)">
 				<a class="deescalate button" title="Click to de-escalate item">5</a>
 				<a class="delay button button" title="Click to push decay by one day">c</a>
 			</div>

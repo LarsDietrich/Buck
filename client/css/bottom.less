@@ -158,6 +158,10 @@ h1, h2, h3, h4, h5, h6 {
 	}
 }
 
+.container {
+	position: relative;
+}
+
 button.cancel {
 	.opacity(50);
 }
@@ -166,10 +170,11 @@ button.cancel {
 	h1 {
 		display: block;
 		font-size: 18px;
-		line-height: 18px;
+		line-height: 20px;
 		text-transform: capitalize;
 		color: lighten(@baseTextColor,20%);
 		border-bottom: 1px dotted lighten(@baseTextColor,50%);
+		margin-top: 10px;
 		clear: both;
 		cursor: pointer;
 		text-align: center;
@@ -178,7 +183,6 @@ button.cancel {
 				.iconic;
 				content: '3';
 				display: inline-block;
-				float: right;
 				font-size: 24px;
 				line-height: 15px;
 				color: darken(@baseColor,20%);
@@ -189,11 +193,36 @@ button.cancel {
 				.iconic;
 				content: '5';
 				display: inline-block;
-				float: right;
 				font-size: 24px;
 				line-height: 15px;
 				color: darken(@baseColor,20%);
 			}
+		}
+	}
+	.itemAdd {
+		position: absolute;
+		right: 0;
+		a {
+			height: 30px;
+			font-size: 24px;
+			line-height: 24px;
+		}
+	}
+	.itemAddDialog {
+		border: 1px solid @borderColor;
+		border-top: 1px solid lighten(@borderColor,10%);
+		border-bottom: 1px solid darken(@borderColor,10%);
+		padding: 10px;
+		background-color: lighten(@borderColor,15%);
+		.border-radius(5px);
+		input, .button {
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			margin-bottom: 5px;
+		}
+		.button {
+			text-align: center;
 		}
 	}
 	.search {
@@ -212,8 +241,10 @@ button.cancel {
 		border: 1px solid @borderColor;
 		border-top: 1px solid lighten(@borderColor,10%);
 		border-bottom: 1px solid darken(@borderColor,10%);
-		margin-left: 9px;
-		margin-right: 9px;
+		margin-left: 6px;
+		margin-right: 6px;
+		margin-bottom: 10px;
+		padding: 10px 3px;
 		background-color: lighten(@borderColor,15%);
 		.border-radius(5px);
 		position: relative;
@@ -284,6 +315,9 @@ button.cancel {
 			}
 		}
 		.itemAction {
+			&.add-top {
+				margin-top: 8px !important;
+			}
 			.button {
 				.iconic;
 				display: none;
@@ -303,6 +337,10 @@ button.cancel {
 			}
 		}
 		&.accepted {
+			h2 {
+				font-size: 16px;
+				line-height: 24px;
+			}
 			.itemAction {
 				.escalate, .deescalate {
 					display: block;
@@ -351,6 +389,13 @@ button.cancel {
 				}
 			}
 		}
+
+		&.decayed, &.deleted, &.done {
+			h2 {
+				font-size: 12px;
+				line-height: 18px;
+			}
+		}
 	}
 }
 
@@ -366,30 +411,13 @@ button.cancel {
 
 /* All Mobile Sizes (devices and browser) */
 @media only screen and (max-width: 767px) {
-/*	#items .items {
-		&.incoming,
-		&.notyours, &.decayed, &.deleted, &.done {
-		  	.columns(2);
-		}
-	}*/
+
 }
 
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
 @media only screen and (min-width: 480px) and (max-width: 767px) {
-/*	#items .items {
-		&.incoming,
-		&.notyours, &.decayed, &.deleted, &.done {
-		  	.columns(2);
-		}
-	}*/
 }
 
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (max-width: 479px) {
-/*	#items .items {
-		&.incoming,
-		&.notyours, &.decayed, &.deleted, &.done {
-		  	.columns(1);
-		}
-	}*/
 }

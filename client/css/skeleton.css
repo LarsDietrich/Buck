@@ -382,6 +382,8 @@
     .container .fifteen.columns                 { width: 880px; }
     .container .sixteen.columns                 { width: 940px; }
 
+    .container .one-sixth.column                { width: 140px; }
+
     .container .one-third.column                { width: 300px; }
     .container .two-thirds.column               { width: 620px; }
 
@@ -432,6 +434,8 @@
         .container .fourteen.columns                { width: 652px; }
         .container .fifteen.columns                 { width: 700px; }
         .container .sixteen.columns                 { width: 748px; }
+
+	    .container .one-sixth.column                { width: 108px; }
 
         .container .one-third.column                { width: 236px; }
         .container .two-thirds.column               { width: 492px; }
