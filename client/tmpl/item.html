@@ -57,7 +57,7 @@ if ( data.status === 0 || data.status === 5 || data.status === 1 ) {
 		<div class="(@= metaClass @) itemMeta">
 			<h2 (@ if (data.humanStatus!=="incoming"&&data.humanStatus!=="deleted"&&data.humanStatus!=="decayed"&&data.humanStatus!=="notyours"&&data.humanStatus!=="done"){ @)class="editable-itemname" title="Click to edit title"(@ } @)>(@= data.name @)</h2>
 			<div class="desc">
-				<p><span class="editable-itemdesc" title="Click to edit description">(@= data.desc @)</span> // by <span class="meta">(@= data.submitter @)</span> in <span class="meta">(@= data.bucketName @)</span></p> 
+				<p><span class="editable-itemdesc desctext" title="Click to edit description">(@= data.desc @)</span> // by <span class="meta">(@= data.submitter @)</span> in <span class="meta">(@= data.bucketName @)</span></p> 
 			</div>
 		</div>
 		<div class="(@= actionClass @) itemAction">

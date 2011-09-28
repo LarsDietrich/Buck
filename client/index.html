@@ -9,6 +9,7 @@
 </head>
 <body>
 	<div class="container">
+		<a href="#" id="logoutLink">logout</a>
 		<div class="sixteen columns alpha omega menu">
 			<nav>
 				<a href="#" class="bucketsMenu" data-page="buckets">Buckets</a>
@@ -26,11 +27,18 @@
 			<input name="q" type="search" class="search" placeholder="Search for anything" />
 			<br class="clear" />
 			<div class="itemAdd"><a href="#" class="button" title="Click to add new item">+</a></div>
-			<div class="four columns offset-by-eleven">
-				<div class="itemAddDialog">
-					<input name="itemName" placeholder="Name" />
-					<input name="itemBucket" class="bucketToken" placeholder="Bucket"/>
-					<a class="button">Save Item</a>
+			<div class="five columns offset-by-eleven itemAddDialogContainer">
+				<div class="five columns row">
+					<div class="itemAddDialog">
+						<input name="itemName" placeholder="Name" tabindex="1" />
+						<select name="itemBucket" class="dynamic" tabindex="2"></select>
+						<br class="clear" />
+						<div>
+							<button class="save button" tabindex="3">Save Item</button>
+							<a class="cancel button">Cancel</a>
+						</div>
+						<br class="clear" />
+					</div>
 				</div>
 			</div>
 			<br class="clear" />

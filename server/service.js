@@ -63,6 +63,16 @@ exports.createRouter = function(resources){
 			});
 		});
 	});
+	router.path('/login.js',function(){
+		//GET /login.js
+		this.get().bind(function(req,res,params){
+			fs.readFile('client/js/login.js','utf-8',function(err,data){
+				if (err){return res.send(500,{},{error:err});}
+				res.baseResponse.headers = {'Content-Type':'application/javascript'};
+				res.sendBody(data);
+			});
+		});
+	});
 	router.path('/jq.js',function(){
 		//GET /jq.js
 		this.get().bind(function(req,res,params){
@@ -90,7 +100,14 @@ exports.createRouter = function(resources){
 				resources.bucket.list(function(err,buckets){
 					if (err){return res.send(500,{},{error:err});}
 					res.send(200,{},buckets);
-				});
+				},params);
+			});
+			//GET /buckets/q/:query
+			this.get(/q\/(.*)/).bind(function(req,res,query,params){
+				resources.bucket.list(function(err,buckets){
+					if (err){return res.send(500,{},{error:err});}
+					res.send(200,{},buckets);
+				},{q:query});
 			});
 			//GET /buckets/:id
 			this.get(/\/([a-zA-Z0-9_-]+)/).bind(function(req,res,bucketId,params){
@@ -103,7 +120,7 @@ exports.createRouter = function(resources){
 			this.post().bind(function(req,res,bucket){
 				resources.bucket.create(bucket,function(err,result){
 					if (err){return res.send(500,{},{error:err});}
-					res.send(200,{},{bucket:result});
+					res.send(200,{},result);
 				});
 			});
 			//PUT /buckets/:id
@@ -128,7 +145,15 @@ exports.createRouter = function(resources){
 				resources.item.list(function(err,items){
 					if (err){return res.send(500,{},{error:err});}
 					res.send(200,{},items);
-				});
+				},params);
+			});
+			//GET /items/q/:query
+			this.get(/q\/(.*)/).bind(function(req,res,query,params){
+				console.log(query);
+				resources.item.list(function(err,items){
+					if (err){return res.send(500,{},{error:err});}
+					res.send(200,{},items);
+				},{q:query});
 			});
 			//GET /items/:id
 			this.get(/\/([a-zA-Z0-9_-]+)/).bind(function(req,res,itemId,params){
@@ -141,7 +166,7 @@ exports.createRouter = function(resources){
 			this.post().bind(function(req,res,item){
 				resources.item.create(item,function(err,result){
 					if (err){return res.send(500,{},{error:err});}
-					res.send(200,{},{item:result});
+					res.send(200,{},result);
 				});
 			});
 			//PUT /items/:id
@@ -168,7 +193,7 @@ exports.createRouter = function(resources){
 				resources.member.list(function(err,members){
 					if (err){return res.send(500,{},{error:err});}
 					res.send(200,{},members);
-				});
+				},params);
 			});
 			//GET /members/:id
 			this.get(/\/([a-zA-Z0-9_-]+)/).bind(function(req,res,memberId,params){

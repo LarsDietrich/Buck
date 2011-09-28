@@ -6,9 +6,9 @@ var Bucket = exports.Bucket = function(db,es) {
 	this.es = es;
 }
 
-Bucket.prototype.list = function(cb) {
+Bucket.prototype.list = function(cb,params) {
 	var _data;
-	this.es.search(common.esIndex,'bucket',{
+	var filter = {
 		from: 0,
 		size: common.esMax,
 		query: {
@@ -25,7 +25,11 @@ Bucket.prototype.list = function(cb) {
 				}
 			}
 		}
-	})
+	};
+	if ( typeof(params) !== 'undefined' && typeof(params.q) !== 'undefined' ) {
+		filter.query.filtered.query.query_string.query = '*'+params.q+'*';
+	}
+	this.es.search(common.esIndex,'bucket',filter)
 		.on('data',function(data){
      		data = JSON.parse(data);
      		if ( !data.error && data.hits.total > 0 ) { 

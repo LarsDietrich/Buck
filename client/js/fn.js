@@ -124,7 +124,7 @@ Utils.prototype = {
         return 'incoming';
     },
     currentUser: function() {
-        return 'dsp';
+        return $.cookie('buckUserId');
     }
 };
 
@@ -185,6 +185,12 @@ Storage.prototype = {
         cb();
         this.client.del('buckets/'+bucketId,function(result){});
     },
+    setQuery: function(query) {
+        this.query = query;
+        this.itemsTime = -1;
+        this.bucketsTime = -1;
+        this.membersTime = -1;
+    },
     reloadItems: function(cb) {
         var that = this;
         if (typeof(cb)==='function') {
@@ -193,7 +199,11 @@ Storage.prototype = {
             this.parallelCalls = 1;
         }
         if ( ((new Date().getTime())-this.itemsTime) > this.maxAge ) {
-            this.client.get('items',null,function(data){
+            var urlExtra = '';
+            if ( typeof(this.query) !== 'undefined' ) {
+                urlExtra = '/q/'+this.query;
+            }
+            this.client.get('items'+urlExtra,null,function(data){
                 that.items = {};
                 if ( data ) {
                     data.forEach(function(item){
@@ -214,6 +224,13 @@ Storage.prototype = {
         this.items[itemId] = item;
         cb();
         this.client.put('items/'+itemId,item,function(result){});
+    },
+    newItem: function(item,cb) {
+        var that = this;
+        this.client.post('items',item,function(result){
+            that.items[result.itemId] = item;
+            cb();
+        });
     },
     removeItem: function(itemId,cb) {
         delete this.items[itemId];
@@ -337,7 +354,29 @@ UI.prototype = {
                 that.itemsMode();
                 cb();
             });
+        } else if ( mode === 'login' ) {
+            this.storage.reloadMembers(function(){
+                that.loginMode();
+                cb();
+            });
         }
+    },
+    loginMode: function() {
+        $("input.login").tokenInput('/api/members',{
+            hintText: 'Enter your name or handle',
+            tokenLimit: 1,
+            onResult: function(results) {
+                $.each(results, function(index, value) {
+                    value.id = value._id;
+                });
+                return results;
+            },
+            onAdd: function(item) {
+                $.cookie('buckUserName', item.name);
+                $.cookie('buckUserId', item.id);
+                document.location = '/';
+            },
+        });
     },
     itemsMode: function() {
         var that = this;
@@ -349,14 +388,20 @@ UI.prototype = {
                     $(this).closest('section').children('div').hide();
                 }
             });
+            var bucketOptions = '';
+            $.each(that.storage.buckets,function(bucketId,bucket){
+                bucketOptions += '<option value="'+bucketId+'">'+bucket.name+'</option>';
+            });
+            $('#items select[name=itemBucket]').html(bucketOptions);
             $('#items').show();
             that.itemLiveBinds();
             that.itemBinds();
         });
     },
     itemLiveBinds: function() {
-        var that = this;
-        $('.search').live('keyup keydown focus blur',function(){
+        var that = this,
+            searchTimeout;
+        $('.search').live('change keyup',function(){
             if ( $(this).val() !== '' ) {
                 var t = $(this).val();
                 if ( t.length === 1 ) { 
@@ -364,20 +409,63 @@ UI.prototype = {
                 } else if ( t.length === 2 ) { 
                     $('.itemsMenu').text('Items');
                 }
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function(){
+                    that.storage.setQuery(t);
+                    that.drawItems(function(){},true);
+                },50);
             } else {
                 $('.itemsMenu').text('My Items');
             }
         });
-        $('.escalate.button').live('click',function(){
+        $('.itemAdd > a').live('click',function(){
+            $(this).hide();
+            $('.itemAddDialog').show();
+            $('.twipsy').remove();
+            $('.itemAddDialog input[name=itemName]').trigger('focus');
+        });
+        $('.itemAddDialog select, .itemAddDialog input').live('keypress',function(e){
+            if ( e.which === 13 ) {
+                $('.itemAddDialog .save.button').trigger('click');
+            }
+        });
+        $('.itemAddDialog .cancel.button').live('click',function(){
+            $('.itemAdd > a').show();
+            $('.itemAddDialog').hide();
+            $('.itemAddDialog input').val('');
+        });
+        $('.itemAddDialog .save.button').live('click',function(){
+            var $this = $(this);
+            $('.itemAdd > a').show();
+            $('.itemAddDialog').hide();
+            var newItem = {
+                name: $('.itemAddDialog input[name=itemName]').val(),
+                bucketId: $('.itemAddDialog select[name=itemBucket] option:selected').val(),
+                submitter: that.utils.currentUser(),
+                status: 2,
+                created: (new Date().getTime())
+            };
+            $this.html('Saving...').css('opacity',0.7);
+            that.storage.newItem(newItem,function(){
+                $('.itemAddDialog .cancel.button').trigger('click');
+                $this.html('Save').css('opacity',1);
+                that.drawItems(function(){});
+            });
+        });
+        $('.escalate.button, .done.button').live('click',function(){
             var $item = $(this).closest('.item'),
                 itemId = $item.attr('data-id'),
-                item = that.storage.getItem(itemId);
+                item = that.storage.getItem(itemId),
+                $this = $(this);
             item.status++;
             if ( item.status >= 3 ) {
                 item.owner = that.utils.currentUser();
             }
             that.storage.setItem(itemId,item,function(){
                 $item.css('opacity',0.3);
+                if ( $this.hasClass('done') ) {
+                    $.getScript('/confetti.js');
+                }
                 that.drawItems(function(){});
             });
         });
@@ -447,12 +535,15 @@ UI.prototype = {
     },
     drawItems: function(cb,reload) {
         var that = this,
-            loadItems = function(cb){cb();};
+            loadItems = {
+                reloadItems: function(cb){cb();}
+            };
         $('.twipsy').remove();
+
         if ( typeof(reload) !== 'undefined' ) {
-            loadItems = this.storage.reloadItems;
+            loadItems = this.storage;
         }
-        loadItems(function(){
+        loadItems.reloadItems(function(){
             that.getTmpl('item',function(anItem){
                 that.getTmpl('itemList',function(itemListTmpl){
                     that.tempItems = {
@@ -467,13 +558,15 @@ UI.prototype = {
                     var ctr = 0;
                     $.each(that.storage.items,function(i,item){
                         var bucket = that.storage.getBucket(item.bucketId);
-                        item.bucketName = bucket.name;
-                        item.humanStatus = that.utils.humanStatus(item.status);
-                        item.ctr = ctr++;
-                        if ( ( item.status === 3 || item.status === 4 ) && (item.owner !== that.utils.currentUser()) ) {
-                            that.tempItems.notyours.push(anItem(item));
-                        } else {
-                            that.tempItems[item.humanStatus].push(anItem(item));
+                            if ( typeof(bucket) !== 'undefined' ) {
+                            item.bucketName = bucket.name;
+                            item.humanStatus = that.utils.humanStatus(item.status);
+                            item.ctr = ctr++;
+                            if ( ( item.status === 3 || item.status === 4 ) && (item.owner !== that.utils.currentUser()) ) {
+                                that.tempItems.notyours.push(anItem(item));
+                            } else {
+                                that.tempItems[item.humanStatus].push(anItem(item));
+                            }
                         }
                     });
                     $('.dynamic.items').html('');
@@ -498,11 +591,6 @@ Core.prototype = {
         var that = this;
 
         this.client = new Client();
-
-console.log(this.client.get('buckets',{q:'asdf',a:'asdf'},function(data){
-                console.log(data);
-            }));
-
         this.utils = new Utils();
         this.storage = new Storage(this.client);
         this.ui = {};
@@ -514,7 +602,21 @@ console.log(this.client.get('buckets',{q:'asdf',a:'asdf'},function(data){
 }
 
 $(function(){
-    var Buck = new Core(function(){
-        Buck.ui.switchMode('items',function(){});
-    });
+    if ( document.location.pathname.indexOf('/login') === -1 ) {
+        $('#logoutLink').click(function(e){
+            $.cookie('buckUserId',null);
+            $.cookie('buckUserName',null);
+            document.location = '/login';
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        var Buck = new Core(function(){
+            Buck.ui.switchMode('items',function(){});
+        });
+    } else {
+        //too tired to think straight, need to finish this by tomorrow morning =P
+        var Buck = new Core(function(){
+            Buck.ui.switchMode('login',function(){});
+        });
+    }
 });

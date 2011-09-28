@@ -6,9 +6,9 @@ var Item = exports.Item = function(db,es) {
 	this.es = es;
 }
 
-Item.prototype.list = function(cb) {
+Item.prototype.list = function(cb,params) {
 	var _data;
-	this.es.search(common.esIndex,'item',{
+	var filter = {
 		from: 0,
 		size: common.esMax,
 		query: {
@@ -25,7 +25,12 @@ Item.prototype.list = function(cb) {
 				}
 			}
 		}
-	})
+	};
+	if ( typeof(params) !== 'undefined' && typeof(params.q) !== 'undefined' ) {
+		filter.query.filtered.query.query_string.query = '*'+params.q+'*';
+	}
+	console.log(filter.query.filtered.query.query_string.query);
+	this.es.search(common.esIndex,'item',filter)
 		.on('data',function(data){
      		data = JSON.parse(data);
      		if ( !data.error && data.hits.total > 0 ) {

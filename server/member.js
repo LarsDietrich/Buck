@@ -5,9 +5,9 @@ var Member = exports.Member = function(db,es) {
 	this.es = es;
 }
 
-Member.prototype.list = function(cb) {
+Member.prototype.list = function(cb,params) {
 	var _data;
-	this.es.search(common.esIndex,'member',{
+	var filter = {
 		from: 0,
 		size: common.esMax,
 		query: {
@@ -24,7 +24,11 @@ Member.prototype.list = function(cb) {
 				}
 			}
 		}
-	})
+	};
+	if ( typeof(params) !== 'undefined' && typeof(params.q) !== 'undefined' ) {
+		filter.query.filtered.query.query_string.query = '*'+params.q+'*';
+	}
+	this.es.search(common.esIndex,'member',filter)
 		.on('data',function(data){
      		data = JSON.parse(data);
      		if ( !data.error && data.hits.total > 0 ) {
