@@ -52,7 +52,6 @@ Client.prototype = {
                 } else {
                    requestParams.url += '&';
                 }
-                // requestParams.url += data.join('&');
                 requestParams.url += $.param(data,true);
             }
         }
@@ -123,7 +122,7 @@ Utils.prototype = {
         }
         return 'incoming';
     },
-    currentUser: function() {
+    currentMember: function() {
         return $.cookie('buckUserId');
     }
 };
@@ -186,7 +185,18 @@ Storage.prototype = {
         this.client.del('buckets/'+bucketId,function(result){});
     },
     setQuery: function(query) {
-        this.query = query;
+        console.log('setQuery('+JSON.stringify(query)+')');
+        if ( typeof(query.query) !== 'undefined' ) {
+            this.query = query.query;
+        } else {
+            this.query = undefined;
+        }
+        if ( typeof(query.member) !== 'undefined' ) {
+            this.member = query.member;
+        } else {
+            this.member = undefined;
+        }
+
         this.itemsTime = -1;
         this.bucketsTime = -1;
         this.membersTime = -1;
@@ -198,12 +208,15 @@ Storage.prototype = {
             this.doneCb = cb;
             this.parallelCalls = 1;
         }
+        var query = {};
+        if ( typeof(this.query) !== 'undefined' ) {
+            query.q = this.query;
+        }
+        if ( typeof(this.member) !== 'undefined' ) {
+            query.m = this.member;
+        }
         if ( ((new Date().getTime())-this.itemsTime) > this.maxAge ) {
-            var urlExtra = '';
-            if ( typeof(this.query) !== 'undefined' ) {
-                urlExtra = '/q/'+this.query;
-            }
-            this.client.get('items'+urlExtra,null,function(data){
+            this.client.get('items',query,function(data){
                 that.items = {};
                 if ( data ) {
                     data.forEach(function(item){
@@ -228,14 +241,15 @@ Storage.prototype = {
     newItem: function(item,cb) {
         var that = this;
         this.client.post('items',item,function(result){
+            item.itemId = result.itemId;
             that.items[result.itemId] = item;
             cb();
         });
     },
     removeItem: function(itemId,cb) {
-        delete this.items[itemId];
+        this.items[itemId].status = 0;
         cb();
-        this.client.del('items/'+itemId,function(result){});
+        this.client.put('items/'+itemId,this.items[itemId],function(result){});
     },
     reloadMembers: function(cb) {
         var that = this;
@@ -380,6 +394,10 @@ UI.prototype = {
     },
     itemsMode: function() {
         var that = this;
+        $('.search').val('');
+        this.storage.setQuery({
+            member: that.utils.currentMember()
+        });
         this.drawItems(function(){
             $('#items h1').each(function(e){
                 if ( $(this).hasClass('open') ) {
@@ -396,26 +414,34 @@ UI.prototype = {
             $('#items').show();
             that.itemLiveBinds();
             that.itemBinds();
-        });
+        },true);
     },
     itemLiveBinds: function() {
         var that = this,
             searchTimeout;
         $('.search').live('change keyup',function(){
             if ( $(this).val() !== '' ) {
-                var t = $(this).val();
-                if ( t.length === 1 ) { 
+                var query = $(this).val();
+                if ( query.length === 1 ) { 
                     $('.itemsMenu').text('y Items');
-                } else if ( t.length === 2 ) { 
+                } else if ( query.length === 2 ) { 
                     $('.itemsMenu').text('Items');
                 }
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(function(){
-                    that.storage.setQuery(t);
-                    that.drawItems(function(){},true);
-                },50);
+                    that.storage.setQuery({query:query});
+                    that.drawItems(function(){
+                        if ( $('#items-notyours > div').children().length ) {
+                            $('#items-notyours > div').show();
+                        }
+                    },true);
+                },1);
             } else {
                 $('.itemsMenu').text('My Items');
+                that.storage.setQuery({
+                    member: that.utils.currentMember()
+                });
+                $('#items-notyours > div').hide();
             }
         });
         $('.itemAdd > a').live('click',function(){
@@ -441,7 +467,7 @@ UI.prototype = {
             var newItem = {
                 name: $('.itemAddDialog input[name=itemName]').val(),
                 bucketId: $('.itemAddDialog select[name=itemBucket] option:selected').val(),
-                submitter: that.utils.currentUser(),
+                submitter: that.utils.currentMember(),
                 status: 2,
                 created: (new Date().getTime())
             };
@@ -459,7 +485,7 @@ UI.prototype = {
                 $this = $(this);
             item.status++;
             if ( item.status >= 3 ) {
-                item.owner = that.utils.currentUser();
+                item.owner = that.utils.currentMember();
             }
             that.storage.setItem(itemId,item,function(){
                 $item.css('opacity',0.3);
@@ -534,6 +560,7 @@ UI.prototype = {
         });
     },
     drawItems: function(cb,reload) {
+        console.log('drawItems('+cb.toString()+','+reload+')');
         var that = this,
             loadItems = {
                 reloadItems: function(cb){cb();}
@@ -562,7 +589,7 @@ UI.prototype = {
                             item.bucketName = bucket.name;
                             item.humanStatus = that.utils.humanStatus(item.status);
                             item.ctr = ctr++;
-                            if ( ( item.status === 3 || item.status === 4 ) && (item.owner !== that.utils.currentUser()) ) {
+                            if ( ( item.status === 3 || item.status === 4 ) && (item.owner !== that.utils.currentMember()) ) {
                                 that.tempItems.notyours.push(anItem(item));
                             } else {
                                 that.tempItems[item.humanStatus].push(anItem(item));
@@ -570,7 +597,16 @@ UI.prototype = {
                         }
                     });
                     $('.dynamic.items').html('');
+                    console.log(that.tempItems);
                     $('.dynamic.items').html(itemListTmpl(that.tempItems));
+                    $('#items h1').each(function(){
+                        if ( $(this).hasClass('open') ) {
+                            $(this).closest('section').children('div').show();
+                        } else {
+                            $(this).closest('section').children('div').hide();
+                        }
+                    });
+
                     that.itemBindsUnbind();
                     that.itemBinds();
                     cb();
@@ -602,7 +638,12 @@ Core.prototype = {
 }
 
 $(function(){
+    var defaultMode = 'items';
     if ( document.location.pathname.indexOf('/login') === -1 ) {
+        if ( $.cookie('buckUserId') === null || $.cookie('buckUserName') === null ) {
+            document.location = '/login';
+        }
+        $('#logoutLink').html($('#logoutLink').html()+" "+$.cookie('buckUserId'));
         $('#logoutLink').click(function(e){
             $.cookie('buckUserId',null);
             $.cookie('buckUserName',null);
@@ -610,13 +651,10 @@ $(function(){
             e.preventDefault();
             e.stopPropagation();
         });
-        var Buck = new Core(function(){
-            Buck.ui.switchMode('items',function(){});
-        });
     } else {
-        //too tired to think straight, need to finish this by tomorrow morning =P
-        var Buck = new Core(function(){
-            Buck.ui.switchMode('login',function(){});
-        });
+        defaultMode = 'login';
     }
+    var Buck = new Core(function(){
+        Buck.ui.switchMode(defaultMode,function(){});
+    });
 });

@@ -15,7 +15,7 @@ Item.prototype.list = function(cb,params) {
 			filtered: {
 				query: {
 					query_string: {
-						query: '*'
+						query: '*'						
 					}
 				},
 				filter: {
@@ -26,10 +26,14 @@ Item.prototype.list = function(cb,params) {
 			}
 		}
 	};
-	if ( typeof(params) !== 'undefined' && typeof(params.q) !== 'undefined' ) {
-		filter.query.filtered.query.query_string.query = '*'+params.q+'*';
+	if ( typeof(params) !== 'undefined' ) {
+		if ( typeof(params.b) !== 'undefined' ) {
+			filter.query.filtered.query.query_string.query = '*'+params.b+'*';
+			filter.query.filtered.query.query_string.field = 'bucketId';
+		} else if ( typeof(params.q) !== 'undefined' ) {
+			filter.query.filtered.query.query_string.query = '*'+params.q+'*';
+		}
 	}
-	console.log(filter.query.filtered.query.query_string.query);
 	this.es.search(common.esIndex,'item',filter)
 		.on('data',function(data){
      		data = JSON.parse(data);

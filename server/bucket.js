@@ -15,7 +15,7 @@ Bucket.prototype.list = function(cb,params) {
 			filtered: {
 				query: {
 					query_string: {
-						query: '*'
+						query: '*'						
 					}
 				},
 				filter: {
@@ -26,8 +26,14 @@ Bucket.prototype.list = function(cb,params) {
 			}
 		}
 	};
-	if ( typeof(params) !== 'undefined' && typeof(params.q) !== 'undefined' ) {
-		filter.query.filtered.query.query_string.query = '*'+params.q+'*';
+
+	if ( typeof(params) !== 'undefined' ) {
+		if ( typeof(params.q) !== 'undefined' ) {
+			filter.query.filtered.query.query_string.query = '*'+params.q+'*';
+		}
+		if ( typeof(params.m) !== 'undefined' ) {
+			filter.query.filtered.filter.term.memberHandles = params.m;
+		}
 	}
 	this.es.search(common.esIndex,'bucket',filter)
 		.on('data',function(data){

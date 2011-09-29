@@ -1,21 +1,21 @@
 /api/buckets
 POST
-{"name":"buck bucket","desc":"bucket description","memberHandles":["dsp","sth"]}
+{"name":"bucket 1","desc":"bucket description","memberHandles":["dsp","sth"]}
 POST
-{"name":"another bucket","desc":"some bucket description","memberHandles":["dsp","lbu"]}
+{"name":"bucket 2","desc":"some bucket description","memberHandles":["dsp","lbu"]}
 ..
 /items
 POST
-{"name":"Bucket List","desc":"ability to list buckets","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_NcAHq"}
+{"name":"Bucket List","desc":"ability to list buckets","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_ZU5Mw"}
 POST
-{"name":"Bucket Add","desc":"ability to add a bucket","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_NcAHq"}
+{"name":"Bucket Add","desc":"ability to add a bucket","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_ZU5Mw"}
 POST
-{"name":"Bucket Edit","desc":"ability to change a bucket","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_NcAHq"}
+{"name":"Bucket Edit","desc":"ability to change a bucket","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_20sVH"}
 POST
-{"name":"Bucket Delete","desc":"ability to delete a bucket","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_NcAHq"}
+{"name":"Bucket Delete","desc":"ability to delete a bucket","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_ZU5Mw"}
 POST
-{"name":"Item Add","desc":"ability to add an item","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_NcAHq"}
+{"name":"Item Add","desc":"ability to add an item","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_20sVH"}
 POST
-{"name":"Item Bucket Change","desc":"ability to change an item's bucket","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_NcAHq"}
+{"name":"Item Bucket Change","desc":"ability to change an item's bucket","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_ZU5Mw"}
 POST
-{"name":"Hashtag URLs","desc":"linkable urls","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_NcAHq"}
+{"name":"Hashtag URLs","desc":"linkable urls","created":1317135027368,"status":2,"submitter":"dsp","bucketId":"bucket_ZU5Mw"}

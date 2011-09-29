@@ -232,6 +232,8 @@ h1, h2, h3, h4, h5, h6 {
 			> div {
 				margin-top: 10px;
 				text-align: center;
+				display: inline;
+				padding-left: 10px;
 			}
 			display: none;
 		    position: relative;
@@ -246,6 +248,9 @@ h1, h2, h3, h4, h5, h6 {
 			padding-top: 10px;
 			padding-bottom: 10px;
 			.border-radius(5px);
+			input {
+				width: 210px;
+			}
 			input, select {
 				display: block;
 				margin-left: auto;
@@ -422,7 +427,7 @@ h1, h2, h3, h4, h5, h6 {
 		&.notyours, &.accepted {
 			word-wrap: break-word;
 		}
-		&.decayed {
+		&.decayed, &.deleted {
 			.itemAction {
 				.done, .deescalate, .delay {
 					display: none;

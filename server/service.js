@@ -1,4 +1,5 @@
 var journey = require('journey'),
+	http = require('http'),
 	fs = require('fs'),
 	style = require('../client/style.js');
 
@@ -142,10 +143,41 @@ exports.createRouter = function(resources){
 		this.path('/items',function(){
 			//GET /items
 			this.get().bind(function(req,res,params){
-				resources.item.list(function(err,items){
-					if (err){return res.send(500,{},{error:err});}
-					res.send(200,{},items);
-				},params);
+				console.log('geci');
+				if ( typeof(params.m) !== 'undefined' ) {
+					console.log('ribanc');
+					resources.bucket.list(function(err,buckets){
+						if (err){return res.send(500,{},{error:err});}
+						if ( typeof(buckets) !== 'undefined' ) {
+							var ctr = buckets.length;
+							var _items = [];
+							buckets.forEach(function(bucket,i){
+								resources.item.list(function(err,items){
+									if (err){return res.send(500,{},{error:err});}
+									_items = _items.concat(items);
+									ctr -= 1;
+									if ( ctr === 0 ) {
+										res.send(200,{},_items);
+									}
+								});
+							});
+						} else {
+							res.send(200,{},[]);
+						}
+					},params);
+				} else if ( typeof(params.b) !== 'undefined' ) {
+					console.log('fasz');
+					resources.item.list(function(err,items){
+						if (err){return res.send(500,{},{error:err});}
+						res.send(200,{},items);
+					},params);
+				} else {
+					console.log('anyad');
+					resources.item.list(function(err,items){
+						if (err){return res.send(500,{},{error:err});}
+						res.send(200,{},items);
+					},params);
+				}
 			});
 			//GET /items/q/:query
 			this.get(/q\/(.*)/).bind(function(req,res,query,params){
