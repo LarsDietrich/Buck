@@ -12,3 +12,4 @@ Icon?
 /pids
 *.sock
 *.old
+secret.php
