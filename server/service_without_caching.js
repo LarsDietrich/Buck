@@ -94,17 +94,6 @@ exports.createRouter = function(resources){
 			});
 		});
 	});
-
-	router.path('/confetti.js',function(){
-		//GET /confetti.js
-		this.get().bind(function(req,res,params){
-			fs.readFile('client/js/confetti.js','utf-8',function(err,data){
-				if (err){return res.send(500,{},{error:err});}
-				res.baseResponse.headers = {'Content-Type':'application/javascript'};
-				res.sendBody(data);
-			});
-		});
-	});
 	router.path('/api',function(){
 		this.path('/buckets',function(){
 			//GET /buckets

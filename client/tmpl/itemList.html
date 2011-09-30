@@ -1,6 +1,6 @@
 (@ $.each(data,function(status,items){ @)
 	<section id="items-(@= status @)">
-		<h1 class="sixteen columns row (@= (items.length&&(status==="current"||status==="incoming"||status==="accepted"))?"open":"closed" @)">(@= status @) <span>((@= items.length@))</span></h1>
+		<h1 class="sixteen columns row add-bottom (@= (items.length&&(status==="current"||status==="incoming"||status==="accepted"))?"open":"closed" @)">(@= status @) <span>((@= items.length@))</span></h1>
 		<div class="items (@= status @)">
 		    (@ items.forEach(function(item){ @)
 		        (@= item @)

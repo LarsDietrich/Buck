@@ -116,25 +116,31 @@
 }
 
 .adelle-light {
-	/*font-family:"Adelle Light", Georgia, serif; */
-	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	/*font-family:"Adelle Light", Georgia, serif; 
 	font-size-adjust:0.516; 
 	font-weight:200; 
 	font-style:normal;
+	*/
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 200;
 }
 .adelle-regular {
-	/*font-family:"Adelle Regular", Georgia, serif; */
-	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	/*font-family:"Adelle Regular", Georgia, serif;
 	font-size-adjust:0.516; 
 	font-weight:normal; 
-	font-style:normal;
+	font-style:normal;*/
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 300;
 }
 .adelle-bold {
-	/*font-family:"Adelle Bold", Georgia, serif; */
+	/*font-family:"Adelle Bold", Georgia, serif; 
 	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 	font-size-adjust:0.523; 
 	font-weight:bold; 
 	font-style:normal;
+	*/
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 500;
 }
 
 .iconic {
@@ -179,7 +185,7 @@ h1, h2, h3, h4, h5, h6 {
 	position: relative;
 }
 
-.cancel.button {
+.button.cancel, button.cancel {
 	.opacity(50);
 }
 
@@ -237,8 +243,8 @@ h1, h2, h3, h4, h5, h6 {
 			}
 			display: none;
 		    position: relative;
-		    top: -70px;
-		    height: 96px;
+		    top: -43px;
+		    height: 178px;
 			border: 1px solid @borderColor;
 			border-top: 1px solid lighten(@borderColor,10%);
 			border-bottom: 1px solid darken(@borderColor,10%);
@@ -248,10 +254,8 @@ h1, h2, h3, h4, h5, h6 {
 			padding-top: 10px;
 			padding-bottom: 10px;
 			.border-radius(5px);
-			input {
-				width: 210px;
-			}
-			input, select {
+			input, select, textarea {
+				width: 92%;
 				display: block;
 				margin-left: auto;
 				margin-right: auto;
@@ -272,9 +276,10 @@ h1, h2, h3, h4, h5, h6 {
 	}
 	.items {
 		margin-bottom: 5px;
-		&.incoming,
-		&.notyours, &.decayed, &.deleted, &.done {
-		//	.columns;
+		&.searchMode {
+			.button {
+				display: none !important;
+			}
 		}
 	}
 	.item {
@@ -288,6 +293,9 @@ h1, h2, h3, h4, h5, h6 {
 		background-color: lighten(@borderColor,15%);
 		.border-radius(5px);
 		position: relative;
+		select {
+			display: inline-block;
+		}
 		.delete {
 			.iconic;
 			position: absolute;
@@ -420,9 +428,6 @@ h1, h2, h3, h4, h5, h6 {
 			.desc {
 				display: block;
 			}
-			.desctext {
-				display: none;
-			}
 		}
 		&.notyours, &.accepted {
 			word-wrap: break-word;
@@ -469,6 +474,11 @@ h1, h2, h3, h4, h5, h6 {
 	.twipsy {
 		display: none !important;
 	}
+	.itemAddContainer {
+	    position: relative;
+	    top: 0;
+	    display: block;
+	}
 }
 
 /* Tablet Portrait size to standard 960 (devices and browsers) */
@@ -476,7 +486,21 @@ h1, h2, h3, h4, h5, h6 {
 
 /* All Mobile Sizes (devices and browser) */
 @media only screen and (max-width: 767px) {
-
+	#items .item {
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+		padding: 10px 0;
+		.itemMeta, .itemAction {
+			padding: 0 3px;
+		}
+	}
+	#items .itemAddDialog {
+		height: auto !important;
+		top: 0 !important;
+	}
+	#items .itemAddDialogContainer {
+		height: auto !important;
+	}
 }
 
 /* Mobile Landscape Size to Tablet Portrait (devices and browsers) */
@@ -485,4 +509,13 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers) */
 @media only screen and (max-width: 479px) {
+	#items .itemAdd {
+	    position: relative;
+	    right: 0;
+	    top: 0;
+	}
+	#items .itemAdd a {
+	    display: block;
+	    text-align: center;
+	}
 }

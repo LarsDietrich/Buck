@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	<title>Buck</title>
+	<title>Project0r</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /> 	
 	<!--<link rel="stylesheet" href="http://f.fontdeck.com/s/css/Gaw5TxJDiiEMYaqF8iLcIrFbPac/buck.tradeshift.com/7263.css" type="text/css" />-->
 	<link rel="stylesheet" href="/style.css" />
 </head>
 <body>
+	<div id="background" class="noselect"></div>
 	<div class="container">
 		<a href="#" id="logoutLink">logout</a>
 		<div class="sixteen columns alpha omega menu">
@@ -24,29 +25,29 @@
 		<br class="clear" />
 
 		<section id="items">
-			<input name="q" type="search" class="search" placeholder="Search for anything" />
+			<div class="twelve columns offset-by-two">
+				<input name="q" type="search" class="search" placeholder="Search for anything" />
+			</div>
 			<br class="clear" />
 			<div class="itemAdd"><a href="#" class="button" title="Click to add new item">+</a></div>
 			<div class="five columns offset-by-eleven itemAddDialogContainer">
-				<div class="five columns row">
-					<div class="itemAddDialog">
-						<input name="itemName" placeholder="Name" tabindex="1" />
-						<select name="itemBucket" class="dynamic" tabindex="2"></select>
-						<br class="clear" />
-						<div>
-							<button class="save button" tabindex="3">Save Item</button>
-							<a class="cancel button">Cancel</a>
-						</div>
-						<br class="clear" />
+				<div class="itemAddDialog">
+					<input name="itemName" placeholder="Name" tabindex="1" />
+					<textarea name="itemDesc" tabindex="2" placeholder="Description"></textarea>
+					<select name="itemBucket" class="dynamic" tabindex="3"></select>
+					<br class="clear" />
+					<div>
+						<button class="save button" tabindex="4">Save Item</button>
+						<a class="cancel button">Cancel</a>
 					</div>
+					<br class="clear" />
 				</div>
 			</div>
 			<br class="clear" />
 			<div class="items dynamic row"></div>
 		</section>
 		<br class="clear" />
-	</div><!-- /container -->
-	<b class="iconic" style="display: none;">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_</b>
+		</div><!-- /container -->
 	<script src="/jq.js"></script>
 	<script src="/plug.js"></script>
 	<script src="/fn.js"></script>

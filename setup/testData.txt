@@ -1,8 +1,8 @@
 /api/buckets
 POST
-{"name":"bucket 1","desc":"bucket description","memberHandles":["dsp","sth"]}
+{"name":"Buck Bugs","desc":"","memberHandles":["dsp"]}
 POST
-{"name":"bucket 2","desc":"some bucket description","memberHandles":["dsp","lbu"]}
+{"name":"Buck Improvements","desc":"","memberHandles":["dsp"]}
 ..
 /items
 POST

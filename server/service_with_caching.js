@@ -1,18 +1,27 @@
 var journey = require('journey'),
 	http = require('http'),
 	fs = require('fs'),
+	common = require('./common'),
 	style = require('../client/style.js');
 
 exports.createRouter = function(resources){
-	var router = new(journey.Router);
+	var router = new(journey.Router),
+		that = this;
+	this.storage = {};
 	router.path('/',function(){
 		//GET /
 		this.get('/').bind(function(req,res,params){
-			fs.readFile('client/index.html','utf-8',function(err,data){
-				if (err){return res.send(500,{},{error:err});}
+			if ( typeof(that.storage['index.html']) === 'undefined' ) {
+				fs.readFile('client/index.html','utf-8',function(err,data){
+					if (err){return res.send(500,{},{error:err});}
+					res.baseResponse.headers = {'Content-Type':'text/html'};
+					that.storage['index.html'] = data;
+					res.sendBody(data);
+				});
+			} else {
 				res.baseResponse.headers = {'Content-Type':'text/html'};
-				res.sendBody(data);
-			});
+				res.sendBody(that.storage['index.html']);
+			}
 		});
 	});
 	router.path('/f',function(){
@@ -27,82 +36,120 @@ exports.createRouter = function(resources){
 	});
 	router.path('/tmpl',function(){
 		this.get(/([a-zA-Z0-9_-]+)\.html/).bind(function(req,res,template,params){
-			fs.readFile('client/tmpl/'+template+'.html','utf-8',function(err,data){
-				if (err){return res.send(500,{},{error:err});}
+			if ( typeof(that.storage[template+'.html']) === 'undefined' ) {
+				fs.readFile('client/tmpl/'+template+'.html','utf-8',function(err,data){
+					if (err){return res.send(500,{},{error:err});}
+					res.baseResponse.headers = {'Content-Type':'text/html'};
+					that.storage[template+'.html'] = data;
+					res.sendBody(data);
+				});
+			} else {
 				res.baseResponse.headers = {'Content-Type':'text/html'};
-				res.sendBody(data);
-			});
+				res.sendBody(that.storage[template+'.html']);
+			}
 		}); 
 	});
 	router.path('/login',function(){
 		//GET /login
 		this.get().bind(function(req,res,params){
-			fs.readFile('client/login.html','utf-8',function(err,data){
-				if (err){return res.send(500,{},{error:err});}
+			if ( typeof(that.storage['login.html']) === 'undefined' ) {
+				fs.readFile('client/login.html','utf-8',function(err,data){
+					if (err){return res.send(500,{},{error:err});}
+					res.baseResponse.headers = {'Content-Type':'text/html'};
+					that.storage['login.html'] = data;
+					res.sendBody(data);
+				});
+			} else {
 				res.baseResponse.headers = {'Content-Type':'text/html'};
-				res.sendBody(data);
-			});
+				res.sendBody(that.storage['login.html']);
+			}
 		});
 	});
 	router.path('/style.css',function(){
 		//GET /style.css
 		this.get().bind(function(req,res,params){
-			style.getCss(function(err,data){
-				if (err){return res.send(500,{},{error:err});}
+			if ( typeof(that.storage['style.css']) === 'undefined' ) {
+				style.getCss(function(err,data){
+					if (err){return res.send(500,{},{error:err});}
+					res.baseResponse.headers = {'Content-Type':'text/css'};
+					res.sendBody(data);
+				});
+			} else {
 				res.baseResponse.headers = {'Content-Type':'text/css'};
-				res.sendBody(data);
-			});
+				res.sendBody(that.storage['style.css']);
+			}
 		});
 	});
 	router.path('/fn.js',function(){
 		//GET /fn.js
 		this.get().bind(function(req,res,params){
-			fs.readFile('client/js/fn.js','utf-8',function(err,data){
-				if (err){return res.send(500,{},{error:err});}
+			if ( typeof(that.storage['fn.js']) === 'undefined' ) {
+				fs.readFile('client/js/fn.js','utf-8',function(err,data){
+					if (err){return res.send(500,{},{error:err});}
+					res.baseResponse.headers = {'Content-Type':'application/javascript'};
+					if ( common.compressJS ) {
+						var jsp = require("uglify-js").parser;
+						var pro = require("uglify-js").uglify;
+						var ast = jsp.parse(data); // parse code and get the initial AST
+						ast = pro.ast_mangle(ast); // get a new AST with mangled names
+						ast = pro.ast_squeeze(ast); // get an AST with compression optimizations
+						data = pro.gen_code(ast); // compressed code here
+					}
+					that.storage['fn.js'] = data;
+					res.sendBody(data);
+				});
+			} else {
 				res.baseResponse.headers = {'Content-Type':'application/javascript'};
-				res.sendBody(data);
-			});
-		});
-	});
-	router.path('/login.js',function(){
-		//GET /login.js
-		this.get().bind(function(req,res,params){
-			fs.readFile('client/js/login.js','utf-8',function(err,data){
-				if (err){return res.send(500,{},{error:err});}
-				res.baseResponse.headers = {'Content-Type':'application/javascript'};
-				res.sendBody(data);
-			});
+				res.sendBody(that.storage['fn.js']);
+			}
 		});
 	});
 	router.path('/jq.js',function(){
 		//GET /jq.js
 		this.get().bind(function(req,res,params){
-			fs.readFile('client/js/jq.js','utf-8',function(err,data){
-				if (err){return res.send(500,{},{error:err});}
+			if ( typeof(that.storage['jq.js']) === 'undefined' ) {
+				fs.readFile('client/js/jq.js','utf-8',function(err,data){
+					if (err){return res.send(500,{},{error:err});}
+					res.baseResponse.headers = {'Content-Type':'application/javascript'};
+					if ( common.compressJS ) {
+						var jsp = require("uglify-js").parser;
+						var pro = require("uglify-js").uglify;
+						var ast = jsp.parse(data); // parse code and get the initial AST
+						ast = pro.ast_mangle(ast); // get a new AST with mangled names
+						ast = pro.ast_squeeze(ast); // get an AST with compression optimizations
+						data = pro.gen_code(ast); // compressed code here
+					}
+					that.storage['jq.js'] = data;
+					res.sendBody(data);
+				});
+			} else {
 				res.baseResponse.headers = {'Content-Type':'application/javascript'};
-				res.sendBody(data);
-			});
+				res.sendBody(that.storage['jq.js']);
+			}
 		});
 	});
 	router.path('/plug.js',function(){
 		//GET /plug.js
 		this.get().bind(function(req,res,params){
-			fs.readFile('client/js/plug.js','utf-8',function(err,data){
-				if (err){return res.send(500,{},{error:err});}
+			if ( typeof(that.storage['plug.js']) === 'undefined' ) {
+				fs.readFile('client/js/plug.js','utf-8',function(err,data){
+					if (err){return res.send(500,{},{error:err});}
+					res.baseResponse.headers = {'Content-Type':'application/javascript'};
+					if ( common.compressJS ) {
+						var jsp = require("uglify-js").parser;
+						var pro = require("uglify-js").uglify;
+						var ast = jsp.parse(data); // parse code and get the initial AST
+						ast = pro.ast_mangle(ast); // get a new AST with mangled names
+						ast = pro.ast_squeeze(ast); // get an AST with compression optimizations
+						data = pro.gen_code(ast); // compressed code here
+					}
+					that.storage['fn.js'] = data;
+					res.sendBody(data);
+				});
+			} else {
 				res.baseResponse.headers = {'Content-Type':'application/javascript'};
-				res.sendBody(data);
-			});
-		});
-	});
-
-	router.path('/confetti.js',function(){
-		//GET /confetti.js
-		this.get().bind(function(req,res,params){
-			fs.readFile('client/js/confetti.js','utf-8',function(err,data){
-				if (err){return res.send(500,{},{error:err});}
-				res.baseResponse.headers = {'Content-Type':'application/javascript'};
-				res.sendBody(data);
-			});
+				res.sendBody(that.storage['plug.js']);
+			}
 		});
 	});
 	router.path('/api',function(){

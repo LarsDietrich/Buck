@@ -11,7 +11,7 @@ module.exports = {
 				if (fsErrTwo){console.log(fsErrTwo); return cb(fsErrTwo);}
 				parser.parse(cssData+lessData, function (err, tree) {
 				    if (err) { console.log(err); return cb(err) }
-				    cb(null,tree.toCSS({compress:false}));
+				    cb(null,tree.toCSS({compress:true}));
 				});
 			});
 		}); 		

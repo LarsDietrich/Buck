@@ -139,6 +139,10 @@ Storage.prototype = {
         this.itemsTime = 0;
         this.bucketsTime = 0;
         this.membersTime = 0;
+
+        this.items = {};
+        this.members = {};
+        this.buckets = {};
     },
     reload: function(cb) {
         this.doneCb = cb;
@@ -185,7 +189,6 @@ Storage.prototype = {
         this.client.del('buckets/'+bucketId,function(result){});
     },
     setQuery: function(query) {
-        console.log('setQuery('+JSON.stringify(query)+')');
         if ( typeof(query.query) !== 'undefined' ) {
             this.query = query.query;
         } else {
@@ -218,9 +221,11 @@ Storage.prototype = {
         if ( ((new Date().getTime())-this.itemsTime) > this.maxAge ) {
             this.client.get('items',query,function(data){
                 that.items = {};
-                if ( data ) {
+                if ( data && data.length ) {
                     data.forEach(function(item){
-                        this.items[item.itemId] = item;
+                        if ( item ) {
+                            this.items[item.itemId] = item;
+                        }
                     },that);
                 }
                 that.itemsTime = new Date().getTime();
@@ -234,9 +239,13 @@ Storage.prototype = {
         return this.items[itemId];
     },
     setItem: function(itemId,item,cb) {
-        this.items[itemId] = item;
-        cb();
-        this.client.put('items/'+itemId,item,function(result){});
+        if ( item.name === '' ) {
+            alert('Item name cannot be empty!');
+        } else {
+            this.items[itemId] = item;
+            cb();
+            this.client.put('items/'+itemId,item,function(result){});
+        }
     },
     newItem: function(item,cb) {
         var that = this;
@@ -406,11 +415,20 @@ UI.prototype = {
                     $(this).closest('section').children('div').hide();
                 }
             });
+
             var bucketOptions = '';
             $.each(that.storage.buckets,function(bucketId,bucket){
-                bucketOptions += '<option value="'+bucketId+'">'+bucket.name+'</option>';
+                bucketOptions += '<option value="'+bucketId+'" data-name="'+bucket.name+'">'+bucket.name+'</option>';
             });
-            $('#items select[name=itemBucket]').html(bucketOptions);
+            var $select = $('#items select[name=itemBucket]');
+            $select.html(bucketOptions);
+
+            function sortAlpha(a,b){  
+                return a.innerHTML > b.innerHTML ? 1 : -1;  
+            };  
+              
+            $select.children('option').sort(sortAlpha).appendTo($select);  
+
             $('#items').show();
             that.itemLiveBinds();
             that.itemBinds();
@@ -420,23 +438,24 @@ UI.prototype = {
         var that = this,
             searchTimeout;
         $('.search').live('change keyup',function(){
-            if ( $(this).val() !== '' ) {
+            if ( $(this).val().length !== 0 ) {
                 var query = $(this).val();
                 if ( query.length === 1 ) { 
                     $('.itemsMenu').text('y Items');
                 } else if ( query.length === 2 ) { 
                     $('.itemsMenu').text('Items');
                 }
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(function(){
-                    that.storage.setQuery({query:query});
-                    that.drawItems(function(){
-                        if ( $('#items-notyours > div').children().length ) {
-                            $('#items-notyours > div').show();
-                        }
-                    },true);
-                },1);
+                that.storage.setQuery({query:query});
+                that.drawItems(function(){
+                    $('.items').addClass('searchMode');
+                    if ( $('#items-notyours > div').children().length ) {
+                        $('#items-notyours > div').show();
+                    }
+                },true);
             } else {
+                document.location.reload(true);
+
+                $('.items').removeClass('searchMode');
                 $('.itemsMenu').text('My Items');
                 that.storage.setQuery({
                     member: that.utils.currentMember()
@@ -444,6 +463,34 @@ UI.prototype = {
                 $('#items-notyours > div').hide();
             }
         });
+        
+        $('.itembucket').live('click',function(){
+            var item = that.storage.getItem($(this).closest('.item').attr('data-id'));
+            $(this).html('<select>'+$('.itemAddDialog select').html()+'</select>'+$.inlineEdit.defaults.buttons);
+            $(this).children('select').val(item.bucketId);
+            $(this).removeClass('itembucket').addClass('itembucketContainer');
+        });
+        $('.itembucketContainer .save').live('change click',function(){
+            var $item = $(this).closest('.item'),
+                item = that.storage.getItem($item.attr('data-id'));
+            item.status = 2;
+            item.bucketId = $(this).closest('.itembucketContainer').children('select').val();
+            that.storage.setItem(item.itemId,item,function(){
+                setTimeout(function(){
+                    that.drawItems(function(){},true);
+                },1000);
+            });
+        });
+        $('.itembucketContainer .cancel').live('click',function(){
+            var item = that.storage.getItem($(this).closest('.item').attr('data-id')),
+                $container = $(this).closest('.itembucketContainer'),
+                bucket = that.storage.getBucket(item.bucketId);
+            $container.children('select').remove();
+            $container.removeClass('itembucketContainer').addClass('itembucket');
+
+            $container.html(bucket.name);
+        });
+
         $('.itemAdd > a').live('click',function(){
             $(this).hide();
             $('.itemAddDialog').show();
@@ -459,24 +506,31 @@ UI.prototype = {
             $('.itemAdd > a').show();
             $('.itemAddDialog').hide();
             $('.itemAddDialog input').val('');
+            $('.itemAddDialog textarea').val('');
         });
         $('.itemAddDialog .save.button').live('click',function(){
-            var $this = $(this);
-            $('.itemAdd > a').show();
-            $('.itemAddDialog').hide();
-            var newItem = {
-                name: $('.itemAddDialog input[name=itemName]').val(),
-                bucketId: $('.itemAddDialog select[name=itemBucket] option:selected').val(),
-                submitter: that.utils.currentMember(),
-                status: 2,
-                created: (new Date().getTime())
-            };
-            $this.html('Saving...').css('opacity',0.7);
-            that.storage.newItem(newItem,function(){
-                $('.itemAddDialog .cancel.button').trigger('click');
-                $this.html('Save').css('opacity',1);
-                that.drawItems(function(){});
-            });
+            var $this = $(this),
+                name = $('.itemAddDialog input[name=itemName]').val();
+            if ( name.length ) {
+                $('.itemAdd > a').show();
+                $('.itemAddDialog').hide();
+                var newItem = {
+                    name: name,
+                    bucketId: $('.itemAddDialog select[name=itemBucket] option:selected').val(),
+                    desc: $('.itemAddDialog textarea[name=itemDesc]').val(),
+                    submitter: that.utils.currentMember(),
+                    status: 2,
+                    created: (new Date().getTime())
+                };
+                $this.html('Saving...').css('opacity',0.7);
+                that.storage.newItem(newItem,function(){
+                    $('.itemAddDialog .cancel.button').trigger('click');
+                    $this.html('Save').css('opacity',1);
+                    that.drawItems(function(){});
+                });
+            } else {
+                alert('Name must not be empty!');
+            }
         });
         $('.escalate.button, .done.button').live('click',function(){
             var $item = $(this).closest('.item'),
@@ -489,9 +543,6 @@ UI.prototype = {
             }
             that.storage.setItem(itemId,item,function(){
                 $item.css('opacity',0.3);
-                if ( $this.hasClass('done') ) {
-                    $.getScript('/confetti.js');
-                }
                 that.drawItems(function(){});
             });
         });
@@ -560,7 +611,6 @@ UI.prototype = {
         });
     },
     drawItems: function(cb,reload) {
-        console.log('drawItems('+cb.toString()+','+reload+')');
         var that = this,
             loadItems = {
                 reloadItems: function(cb){cb();}
@@ -597,7 +647,6 @@ UI.prototype = {
                         }
                     });
                     $('.dynamic.items').html('');
-                    console.log(that.tempItems);
                     $('.dynamic.items').html(itemListTmpl(that.tempItems));
                     $('#items h1').each(function(){
                         if ( $(this).hasClass('open') ) {
