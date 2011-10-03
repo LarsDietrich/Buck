@@ -292,6 +292,7 @@ h1, h2, h3, h4, h5, h6 {
 			h2 {
 				font-size: 14px;
 				line-height: 19px;
+				font-weight: bold;
 			}
 			td, th {
 				margin: 0;
@@ -346,6 +347,10 @@ h1, h2, h3, h4, h5, h6 {
 		.itembucket {
 			cursor: pointer;
 		}
+		.meta {
+			display: inline-block;
+			font-weight: bold;
+		}
 		.itemMeta {
 			.editable-hover {
 				background-color: @editableHoverColor;
@@ -392,10 +397,6 @@ h1, h2, h3, h4, h5, h6 {
 					height: 50px;
 					margin: 0;
 				}
-			}
-			.meta {
-				display: inline-block;
-				font-weight: bold;
 			}
 		}
 		.itemAction {
@@ -488,6 +489,9 @@ h1, h2, h3, h4, h5, h6 {
 		&.done {
 			.button {
 				display: none !important;
+			}
+			.deescalate {
+				display: block !important;
 			}
 		}
 	}
