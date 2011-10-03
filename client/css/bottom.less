@@ -24,7 +24,10 @@
 	-moz-column-gap: @columnGap;
 	column-count: @columnCount;          
 	column-gap: @columnGap;
+}
 
+.hidden {
+	display: none;
 }
 
 .transition(@transition) {
@@ -134,7 +137,6 @@
 }
 .adelle-bold {
 	/*font-family:"Adelle Bold", Georgia, serif; 
-	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 	font-size-adjust:0.523; 
 	font-weight:bold; 
 	font-style:normal;
@@ -234,6 +236,8 @@ h1, h2, h3, h4, h5, h6 {
 	}
 	.itemAddDialogContainer {
 		height: 0;
+		z-index: 100;
+		position: relative;
 		.itemAddDialog {
 			> div {
 				margin-top: 10px;
@@ -281,6 +285,35 @@ h1, h2, h3, h4, h5, h6 {
 				display: none !important;
 			}
 		}
+		table {
+			border-collapse: separate;
+			font-size: 14px;
+			display: block;
+			h2 {
+				font-size: 14px;
+				line-height: 19px;
+			}
+			td, th {
+				margin: 0;
+				padding: 2px 4px;
+			}
+			tbody, thead, tr {
+				display: block;
+			}
+			.headerSortDown, .headerSortUp {
+				background-color: lighten(@borderColor,10%);
+			}
+			.headerSortDown:after {
+				content: ' Λ';
+				color: lighten(@baseTextColor,20%);
+				font-size: 10px;
+			}
+			.headerSortUp:after {
+				content: ' V';	
+				color: lighten(@baseTextColor,20%);
+				font-size: 10px;
+			}
+		}
 	}
 	.item {
 		border: 1px solid @borderColor;
@@ -309,6 +342,9 @@ h1, h2, h3, h4, h5, h6 {
 				font-weight: bold;
 				text-shadow: 1px 1px 3px red;
 			}
+		}
+		.itembucket {
+			cursor: pointer;
 		}
 		.itemMeta {
 			.editable-hover {
@@ -402,7 +438,6 @@ h1, h2, h3, h4, h5, h6 {
 				}
 			}
 		}
-		&.incoming,
 		&.notyours, &.decayed, &.deleted, &.done {
 			.desc {
 				display: none;

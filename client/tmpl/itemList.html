@@ -1,10 +1,26 @@
 (@ $.each(data,function(status,items){ @)
 	<section id="items-(@= status @)">
 		<h1 class="sixteen columns row add-bottom (@= (items.length&&(status==="current"||status==="incoming"||status==="accepted"))?"open":"closed" @)">(@= status @) <span>((@= items.length@))</span></h1>
-		<div class="items (@= status @)">
-		    (@ items.forEach(function(item){ @)
-		        (@= item @)
-		    (@ }); @)   
+		<div class="items (@= status @) container">
+			(@ if (status==="incoming") { @)
+				<table class="tablesorter">
+					<thead>
+						<tr class="item sixteen columns">
+							<th class="eight columns alpha">Name</th>
+							<th class="three columns">Bucket</th>
+							<th class="five columns omega">Created</th>
+							<th class="hidden">&nbsp;</th>
+						</tr>
+					</thead>
+					<tbody>
+			(@ } @)
+			    (@ items.forEach(function(item){ @)
+			        (@= item @)
+			    (@ }); @)   
+			(@ if (status==="incoming") { @)
+					</tbody>
+				</table>
+			(@ } @)   
 		</div>
     </section>
 (@ }); @)

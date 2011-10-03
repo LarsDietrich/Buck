@@ -77,6 +77,28 @@ function Utils() {
 
 Utils.prototype = {
     init: function() {
+        $.timeago.settings.allowFuture = true; //allow future dates
+        $.timeago.settings.refreshMillis = 60000; //refresh times every 60 seconds
+
+        $.inlineEdit.defaults.hover = 'editable-hover';
+        $.inlineEdit.defaults.cancelOnBlur = false;
+        $.inlineEdit.defaults.buttons = '<button class="save">Save</button> <button class="cancel">Cancel</button>';
+
+        $.fn.twipsy.defaults.animate = false;
+        $.fn.twipsy.defaults.delayIn = 100;
+        $.fn.twipsy.defaults.delayOut = 0;
+
+        $.tablesorter.addParser({
+            id: 'timeago',
+            is: function(s) {
+                return false;
+            },
+            format: function(s) {
+                return s.toLowerCase().replace(/good/,2).replace(/medium/,1).replace(/bad/,0);
+            },
+            type: 'numeric'
+        });
+
         this.refreshTimeago();
     },
     highlight: function($elem) {
@@ -93,7 +115,7 @@ Utils.prototype = {
         });
     },
     refreshTimeago: function() {
-        $('abbr.timeago').timeago();
+        $('.timeago').timeago();
     },
     isoDate: function(timestamp){
         var d = new Date(timestamp);
@@ -297,17 +319,6 @@ function UI(storage,utils) {
 }
 UI.prototype = {
     init: function(storage,utils) {
-        $.timeago.settings.allowFuture = true; //allow future dates
-        $.timeago.settings.refreshMillis = 10000; //refresh times every 10 seconds
-
-        $.inlineEdit.defaults.hover = 'editable-hover';
-        $.inlineEdit.defaults.cancelOnBlur = false;
-        $.inlineEdit.defaults.buttons = '<button class="save">Save</button> <button class="cancel">Cancel</button>';
-
-        $.fn.twipsy.defaults.animate = false;
-        $.fn.twipsy.defaults.delayIn = 100;
-        $.fn.twipsy.defaults.delayOut = 0;
-
         this.utils = utils;
         this.storage = storage;
 
@@ -586,6 +597,18 @@ UI.prototype = {
     },
     itemBinds: function() {
         var that = this;
+        //init tablesorter, but only if it hasn't been already, and has at least 2 data row
+        $('.tablesorter').each(function(i){
+            if ( $(this).find('tr').length > 1 && (typeof $(this).data('tablesorter') === 'undefined' || $(this).data('tablesorter') === null) ) {
+                $(this).tablesorter({
+                    sortList: [[2,1]],
+                    headers: {
+                        2:{sorter: 'timeago'},
+                        3:{sorter: false}
+                    }
+                }); 
+            }
+        });
         $('.itemAction .button.done, .itemAction .button.escalate').twipsy();
         $('.itemAction .button.delay, .itemAction .button.deescalate, .itemAdd > a').twipsy({placement:'below'});
         $('.editable-itemname').twipsy();
@@ -621,44 +644,61 @@ UI.prototype = {
             loadItems = this.storage;
         }
         loadItems.reloadItems(function(){
-            that.getTmpl('item',function(anItem){
-                that.getTmpl('itemList',function(itemListTmpl){
-                    that.tempItems = {
-                        current: [],
-                        accepted: [],
-                        notyours: [],
-                        incoming: [],
-                        decayed: [],
-                        done: [],
-                        deleted: []
-                    };
-                    var ctr = 0;
-                    $.each(that.storage.items,function(i,item){
-                        var bucket = that.storage.getBucket(item.bucketId);
-                            if ( typeof(bucket) !== 'undefined' ) {
-                            item.bucketName = bucket.name;
-                            item.humanStatus = that.utils.humanStatus(item.status);
-                            item.ctr = ctr++;
-                            if ( ( item.status === 3 || item.status === 4 ) && (item.owner !== that.utils.currentMember()) ) {
-                                that.tempItems.notyours.push(anItem(item));
-                            } else {
-                                that.tempItems[item.humanStatus].push(anItem(item));
+            that.getTmpl('itemCell',function(anItemCell){
+                that.getTmpl('item',function(anItem){
+                    that.getTmpl('itemList',function(itemListTmpl){
+                        that.tempItems = {
+                            current: [],
+                            accepted: [],
+                            notyours: [],
+                            incoming: [],
+                            decayed: [],
+                            done: [],
+                            deleted: []
+                        };
+                        var ctr = {
+                            current: 0,
+                            accepted: 0,
+                            notyours: 0,
+                            incoming: 0,
+                            decayed: 0,
+                            done: 0,
+                            deleted: 0
+                        };;
+                        $.each(that.storage.items,function(i,item){
+                            var bucket = that.storage.getBucket(item.bucketId);
+                                if ( typeof(bucket) !== 'undefined' ) {
+                                item.bucketName = bucket.name;
+                                item.humanStatus = that.utils.humanStatus(item.status);
+                                var anItemTmpl = anItem;
+                                
+                                
+                                if ( ( item.status === 3 || item.status === 4 ) && (item.owner !== that.utils.currentMember()) ) {
+                                    item.ctr = ctr.notyours++;
+                                    that.tempItems.notyours.push(anItemTmpl(item));
+                                } else {
+                                    item.ctr = ctr[item.humanStatus]++;
+                                    if ( item.status === 2 ) { //incoming
+                                        anItemTmpl = anItemCell;
+                                    }
+                                    that.tempItems[item.humanStatus].push(anItemTmpl(item));
+                                }
                             }
-                        }
+                        });
+                        that.itemBindsUnbind();
+                        $('.dynamic.items').html('');
+                        $('.dynamic.items').html(itemListTmpl(that.tempItems));
+                        $('#items h1').each(function(){
+                            if ( $(this).hasClass('open') ) {
+                                $(this).closest('section').children('div').show();
+                            } else {
+                                $(this).closest('section').children('div').hide();
+                            }
+                        });
+                        that.itemBinds();
+                        that.utils.refreshTimeago();
+                        cb();
                     });
-                    $('.dynamic.items').html('');
-                    $('.dynamic.items').html(itemListTmpl(that.tempItems));
-                    $('#items h1').each(function(){
-                        if ( $(this).hasClass('open') ) {
-                            $(this).closest('section').children('div').show();
-                        } else {
-                            $(this).closest('section').children('div').hide();
-                        }
-                    });
-
-                    that.itemBindsUnbind();
-                    that.itemBinds();
-                    cb();
                 });
             });
         });

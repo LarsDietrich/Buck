@@ -5,7 +5,7 @@ var itemClass = "sixteen columns",
 	firstButtonClass = "",
 	secondButtonClass = "",
 	brk = "";
-if ( data.status === 0 || data.status === 5 || data.status === 1 ) {
+if ( data.humanStatus === "deleted" || data.humanStatus === "done" || data.humanStatus === "decayed" ) {
 	itemClass = "four columns";
 
 	var mod = (data.ctr%4);
@@ -20,7 +20,7 @@ if ( data.status === 0 || data.status === 5 || data.status === 1 ) {
 	actionClass = "omega";
 	firstButtonClass = "";
 	secondButtonClass = "";
-} else if ( data.status === 2 ) {
+} else if ( data.humanStatus === "incoming" ) {
 	itemClass = "one-third column";
 
 	var mod = (data.ctr%3);
@@ -35,7 +35,7 @@ if ( data.status === 0 || data.status === 5 || data.status === 1 ) {
 	actionClass = "";	
 	firstButtonClass = "one-sixth column alpha";
 	secondButtonClass = "one-sixth column omega";
-} else if ( data.status === 3 ) {
+} else if ( data.humanStatus === "accepted" ) {
 	itemClass = "eight columns";
 
 	var mod = (data.ctr%2);
@@ -51,30 +51,33 @@ if ( data.status === 0 || data.status === 5 || data.status === 1 ) {
 	firstButtonClass = "four columns alpha";
 	secondButtonClass = "four columns omega";
 }
+
 var editable = false;
 if (data.humanStatus!=="incoming"&&data.humanStatus!=="deleted"&&data.humanStatus!=="decayed"&&data.humanStatus!=="notyours"&&data.humanStatus!=="done") {
 	editable = true;
 }
+var deletable = false;
+if (data.humanStatus!=="deleted"&&data.humanStatus!=="notyours"&&data.humanStatus!=="done"&&data.humanStatus!=="decayed") {
+	deletable = true;
+}
 @)
-<article id="item-(@= data.itemId @)">
-	<div class="item (@= data.humanStatus @) (@= itemClass @)" data-id="(@= data.itemId @)">
-		<div class="(@= metaClass @) itemMeta">
-			<h2 (@ if (editable){ @)class="editable-itemname" title="Click to edit title"(@ } @)>(@= data.name @)</h2>
-			<div class="desc">
-				<p><span class="(@ if (editable) { @)editable-itemdesc(@ } @) desctext" (@ if (editable){ @)title="Click to edit description"(@ } @)>(@= data.desc @)</span> // by <span class="meta">(@= data.submitter @)</span> in <span class="meta (@ if (editable) { @)itembucket(@ } @)">(@= data.bucketName @)</span></p> 
-			</div>
+<div class="item (@= data.humanStatus @) (@= itemClass @)" data-id="(@= data.itemId @)">
+	<div class="(@= metaClass @) itemMeta">
+		<h2 (@ if (editable){ @)class="editable-itemname" title="Click to edit title"(@ } @)>(@= data.name @)</h2>
+		<div class="desc">
+			<p><span class="(@ if (editable) { @)editable-itemdesc(@ } @) desctext" (@ if (editable){ @)title="Click to edit description"(@ } @)>(@= data.desc @)</span> // by <span class="meta">(@= data.submitter @)</span> in <span class="meta (@ if (editable) { @)itembucket(@ } @)">(@= data.bucketName @)</span></p> 
 		</div>
-		<div class="(@= actionClass @) itemAction">
-			<div class="(@= firstButtonClass @)">
-				<a class="done button" title="Click to mark item as done">y</a>
-				<a class="escalate button" title="Click to escalate item">3</a>
-			</div>
-			<div class="(@= secondButtonClass @)">
-				<a class="deescalate button" title="Click to de-escalate item">5</a>
-				<a class="delay button button" title="Click to push decay by one day">c</a>
-			</div>
-		</div>
-		<br class="clear" />
-		(@ if (data.humanStatus!=="deleted"&&data.humanStatus!=="notyours"&&data.humanStatus!=="done"&&data.humanStatus!=="decayed"){ @)<div class="delete button">x</div>(@ } @)
 	</div>
-</article>
+	<div class="(@= actionClass @) itemAction">
+		<div class="(@= firstButtonClass @)">
+			<a class="done button" title="Click to mark item as done">y</a>
+			<a class="escalate button" title="Click to escalate item">3</a>
+		</div>
+		<div class="(@= secondButtonClass @)">
+			<a class="deescalate button" title="Click to de-escalate item">5</a>
+			<a class="delay button button" title="Click to push decay by one day">c</a>
+		</div>
+	</div>
+	<br class="clear" />
+	(@ if (deletable){ @)<div class="delete button">x</div>(@ } @)
+</div>

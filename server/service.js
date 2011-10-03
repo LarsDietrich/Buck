@@ -17,8 +17,8 @@ exports.createRouter = function(resources){
 	});
 	router.path('/f',function(){
 		//GET /f/adelle-:weight.:extension
-		this.get(/adelle_(light|regular|bold).(eot|woff|ttf)/).bind(function(req,res,weight,extension,params){
-			fs.readFile('client/fonts/adelle_'+weight+'.'+extension,'utf-8',function(err,data){
+		this.get(/adelle(light|regular|bold).(eot|woff|ttf)/).bind(function(req,res,weight,extension,params){
+			fs.readFile('client/fonts/adelle'+weight+'.'+extension,'utf-8',function(err,data){
 				if (err){return res.send(500,{},{error:err});}
 				res.baseResponse.headers = {'Content-Type':'font/ttf'};
 				res.sendBody(data);
