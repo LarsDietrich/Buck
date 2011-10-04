@@ -20,21 +20,6 @@ if ( data.humanStatus === "deleted" || data.humanStatus === "done" || data.human
 	actionClass = "omega";
 	firstButtonClass = "";
 	secondButtonClass = "";
-} else if ( data.humanStatus === "accepted" ) {
-	itemClass = "eight columns";
-
-	var mod = (data.ctr%2);
-	if ( mod === 0 ) {
-		itemClass += " alpha";
-		brk = "<br class=clear />";
-	} else if ( mod === 1 ) {
-		itemClass += " omega";
-	}
-
-	metaClass = "six columns alpha";
-	actionClass = "two columns omega add-top";	
-	firstButtonClass = "";
-	secondButtonClass = "";
 }
 
 var editable = false;

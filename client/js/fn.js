@@ -79,6 +79,18 @@ Utils.prototype = {
     init: function() {
         $.timeago.settings.allowFuture = true; //allow future dates
         $.timeago.settings.refreshMillis = 60000; //refresh times every 60 seconds
+        $.timeago.settings.strings.minute = "about a minute";
+        $.timeago.settings.strings.seconds= "seconds";
+        $.timeago.settings.strings.minute= "a minute";
+        $.timeago.settings.strings.minutes= "%d minutes";
+        $.timeago.settings.strings.hour= "an hour";
+        $.timeago.settings.strings.hours= "%d hours";
+        $.timeago.settings.strings.day= "a day";
+        $.timeago.settings.strings.days= "%d days";
+        $.timeago.settings.strings.month= "a month";
+        $.timeago.settings.strings.months= "%d months";
+        $.timeago.settings.strings.year= "a year";
+        $.timeago.settings.strings.years= "%d years";
 
         $.inlineEdit.defaults.hover = 'editable-hover';
         $.inlineEdit.defaults.cancelOnBlur = false;
