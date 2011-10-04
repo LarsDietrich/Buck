@@ -1051,7 +1051,8 @@ $.inlineEdit.prototype = {
     value: function( newValue ) {
         if ( arguments.length ) {
             var value = newValue === this.options.placeholder ? '' : newValue;
-            this.element.data( 'value' + namespace, $( '.' + placeholderClass, this ).length ? '' : value && this.encodeHtml( value.replace( /\n/g,"<br />" ) ) );
+            //this.element.data( 'value' + namespace, $( '.' + placeholderClass, this ).length ? '' : value && this.encodeHtml( value.replace( /\n/g,"<br />" ) ) ); //this is the original
+            this.element.data( 'value' + namespace, $( '.' + placeholderClass, this ).length ? '' : value && this.encodeHtml( value ) );
         }
         return this.element.data( 'value' + namespace );
     },
@@ -1106,7 +1107,7 @@ $.inlineEdit.prototype = {
         textarea: function( value ) {
             return '<textarea>'+ value.replace(/<br\s?\/?>/g,"\n") +'</textarea>' + this.buttonHtml( { before: '<br />' } );
         },
-        input: function( value ) {
+        input: function( value ) {   
             return '<input type="text" value="'+ value.replace(/(\u0022)+/g, '') +'">' + this.buttonHtml();
         }
     },

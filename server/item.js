@@ -15,7 +15,7 @@ Item.prototype.list = function(cb,params) {
 			filtered: {
 				query: {
 					query_string: {
-						query: '*'						
+						query: '*'
 					}
 				},
 				filter: {
@@ -24,7 +24,15 @@ Item.prototype.list = function(cb,params) {
 					}
 				}
 			}
-		}
+		},
+		sort: [
+			{
+				modified: "desc"
+			},
+			{
+				created: "desc"
+			}
+		]
 	};
 	if ( typeof(params) !== 'undefined' ) {
 		if ( typeof(params.b) !== 'undefined' ) {

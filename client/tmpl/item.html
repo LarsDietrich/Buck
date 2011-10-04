@@ -20,21 +20,6 @@ if ( data.humanStatus === "deleted" || data.humanStatus === "done" || data.human
 	actionClass = "omega";
 	firstButtonClass = "";
 	secondButtonClass = "";
-} else if ( data.humanStatus === "incoming" ) {
-	itemClass = "one-third column";
-
-	var mod = (data.ctr%3);
-	if ( mod === 0 ) {
-		itemClass += " alpha";
-		brk = "<br class=clear />";
-	} else if ( mod === 2 ) {
-		itemClass += " omega";
-	}
-
-	metaClass = "";
-	actionClass = "";	
-	firstButtonClass = "one-sixth column alpha";
-	secondButtonClass = "one-sixth column omega";
 } else if ( data.humanStatus === "accepted" ) {
 	itemClass = "eight columns";
 
@@ -46,10 +31,10 @@ if ( data.humanStatus === "deleted" || data.humanStatus === "done" || data.human
 		itemClass += " omega";
 	}
 
-	metaClass = "";
-	actionClass = "";	
-	firstButtonClass = "four columns alpha";
-	secondButtonClass = "four columns omega";
+	metaClass = "six columns alpha";
+	actionClass = "two columns omega add-top";	
+	firstButtonClass = "";
+	secondButtonClass = "";
 }
 
 var editable = false;

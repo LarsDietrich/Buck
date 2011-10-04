@@ -5,6 +5,7 @@
 @borderColor: #c9c9c9;
 @editableHoverColor: #ffffcc;
 @twipsyBackgroundColor: #000000;
+@twipsySecondaryBackroundColor: #ffffff;
 @twipsyTextColor: #ffffff;
 
 
@@ -15,6 +16,18 @@
 	-moz-background-clip: padding; 
 	-webkit-border-radius: @radius;
 	-webkit-background-clip: padding-box; 
+}
+
+.box-shadow(@shadow: 0 1px 3px rgba(0,0,0,.25)) {
+  -webkit-box-shadow: @shadow;
+     -moz-box-shadow: @shadow;
+          box-shadow: @shadow;
+}
+
+.background-clip(@clip) {
+	-webkit-background-clip: @clip;
+	-moz-background-clip: @clip;
+	background-clip: @clip;
 }
 
 .columns(@columnCount: 3, @columnGap: 15px) {
@@ -110,6 +123,57 @@
 	height: 0;
 }
 
+.popover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 5px;
+  display: none;
+  &.above .arrow { #popoverArrow > .above(); }
+  &.right .arrow { #popoverArrow > .right(); }
+  &.below .arrow { #popoverArrow > .below(); }
+  &.left .arrow { #popoverArrow > .left(); }
+  .arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+  }
+  .inner {
+    background-color: @twipsyBackgroundColor;
+    background-color: rgba(0,0,0,.8);
+    padding: 3px;
+    overflow: hidden;
+    width: 280px;
+    .border-radius(6px);
+    .box-shadow(0 3px 7px rgba(0,0,0,0.3));
+  }
+  .title {
+    background-color: #f5f5f5;
+    padding: 9px 15px;
+    line-height: 1;
+    .border-radius(3px 3px 0 0);
+    border-bottom:1px solid #eee;
+    font-size: 18px;
+    line-height: 24px;
+    margin-bottom: 0;
+    span {
+    	font-weight: bold;
+    }
+  }
+  .content {
+    background-color: @twipsySecondaryBackroundColor;
+    padding: 14px;
+    .border-radius(0 0 3px 3px);
+    .background-clip(padding-box);
+    p, ul, ol {
+      margin-bottom: 0;
+    }
+  }
+}
+
+
+
 .fade {
 	.transition(opacity .15s linear);
 	opacity: 0;
@@ -200,9 +264,12 @@ h1, h2, h3, h4, h5, h6 {
 		color: lighten(@baseTextColor,20%);
 		border-bottom: 1px dotted lighten(@baseTextColor,50%);
 		margin-top: 10px;
-		clear: both;
 		cursor: pointer;
 		text-align: center;
+		position: relative;
+		&:hover {
+			cursor: pointer;
+		}
 		&.open {
 			&:after {
 				.iconic;
@@ -290,6 +357,9 @@ h1, h2, h3, h4, h5, h6 {
 			font-size: 14px;
 			display: block;
 			h2 {
+				cursor: default;
+				border-bottom: 1px dotted @borderColor;
+				display: inline;
 				font-size: 14px;
 				line-height: 19px;
 				font-weight: bold;
@@ -301,8 +371,15 @@ h1, h2, h3, h4, h5, h6 {
 			tbody, thead, tr {
 				display: block;
 			}
+			th {
+				cursor: pointer;
+				text-align: left;
+				&:hover {
+					background-color: lighten(@borderColor,16%);
+				}
+			}
 			.headerSortDown, .headerSortUp {
-				background-color: lighten(@borderColor,10%);
+				font-weight: bold;
 			}
 			.headerSortDown:after {
 				content: ' Λ';

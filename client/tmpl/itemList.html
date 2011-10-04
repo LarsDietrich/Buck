@@ -1,14 +1,22 @@
-(@ $.each(data,function(status,items){ @)
+(@ 
+var isTableView = false;
+$.each(data,function(status,items){
+	isTableView = false;
+	if (status==="incoming"||status==="notyours") {
+		isTableView = true;
+	}
+@)
 	<section id="items-(@= status @)">
 		<h1 class="sixteen columns row add-bottom (@= (items.length&&(status==="current"||status==="incoming"||status==="accepted"))?"open":"closed" @)">(@= status @) <span>((@= items.length@))</span></h1>
+		<br class="clear" />
 		<div class="items (@= status @) container">
-			(@ if (status==="incoming") { @)
+			(@ if (isTableView) { @)
 				<table class="tablesorter">
 					<thead>
-						<tr class="item sixteen columns">
-							<th class="eight columns alpha">Name</th>
+						<tr class="sixteen columns add-bottom">
+							<th class="nine columns alpha">Name</th>
 							<th class="three columns">Bucket</th>
-							<th class="five columns omega">Created</th>
+							<th class="four columns omega">Created</th>
 							<th class="hidden">&nbsp;</th>
 						</tr>
 					</thead>
@@ -17,7 +25,7 @@
 			    (@ items.forEach(function(item){ @)
 			        (@= item @)
 			    (@ }); @)   
-			(@ if (status==="incoming") { @)
+			(@ if (isTableView) { @)
 					</tbody>
 				</table>
 			(@ } @)   

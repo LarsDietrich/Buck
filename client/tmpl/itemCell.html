@@ -1,7 +1,7 @@
 <tr class="item (@= data.humanStatus @) sixteen columns" data-id="(@= data.itemId @)">
-	<td class="eight columns alpha"><h2>(@= data.name @)</h2>(@= data.desc @) // by <span class="meta">(@= data.submitter @)</span></td>
+	<td class="nine columns alpha"><h2 class="desc-tooltip" title="from (@= data.submitter @)" data-content="(@= ((data.desc!==""?data.desc:"Empty Description") + "").replace(/[\\"]/g, "\\$&").replace(/\u0000/g, "\\0"); @)">(@= data.name @)</h2></span></td>
 	<td class="three columns itembucket">(@= data.bucketName @)</td>
-	<td class="three columns"><time class="timeago" datetime="(@= data.created @)">(@= data.created @)</time></td>
+	<td class="two columns"><time class="timeago" datetime="(@= data.created @)">(@= data.created @)</time></td>
 	<td class="two columns omega clearfix itemAction">
 		<div class="one column alpha">
 			<a class="done button" title="Click to mark item as done">y</a>

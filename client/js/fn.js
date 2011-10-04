@@ -88,6 +88,11 @@ Utils.prototype = {
         $.fn.twipsy.defaults.delayIn = 100;
         $.fn.twipsy.defaults.delayOut = 0;
 
+
+        $.fn.popover.defaults.animate = false;
+        $.fn.popover.defaults.delayIn = 0;
+        $.fn.popover.defaults.delayOut = 0;
+
         $.tablesorter.addParser({
             id: 'timeago',
             is: function(s) {
@@ -261,9 +266,13 @@ Storage.prototype = {
         return this.items[itemId];
     },
     setItem: function(itemId,item,cb) {
+        /**
+         * @todo move this somewhere else, it's not the Storage's business
+         */
         if ( item.name === '' ) {
             alert('Item name cannot be empty!');
         } else {
+            item.modified = new Date();
             this.items[itemId] = item;
             cb();
             this.client.put('items/'+itemId,item,function(result){});
@@ -273,6 +282,7 @@ Storage.prototype = {
         var that = this;
         this.client.post('items',item,function(result){
             item.itemId = result.itemId;
+            item.modified = (new Date()).getTime();
             that.items[result.itemId] = item;
             cb();
         });
@@ -421,9 +431,9 @@ UI.prototype = {
         this.drawItems(function(){
             $('#items h1').each(function(e){
                 if ( $(this).hasClass('open') ) {
-                    $(this).closest('section').children('div').show();
+                    $(this).closest('section').children('div, table').show();
                 } else {
-                    $(this).closest('section').children('div').hide();
+                    $(this).closest('section').children('div, table').hide();
                 }
             });
 
@@ -441,6 +451,10 @@ UI.prototype = {
             $select.children('option').sort(sortAlpha).appendTo($select);  
 
             $('#items').show();
+
+            that.fixItemStampHeight($('.items.done.container'),4);
+            that.fixItemStampHeight($('.items.deleted.container'),4);
+
             that.itemLiveBinds();
             that.itemBinds();
         },true);
@@ -589,7 +603,7 @@ UI.prototype = {
             } else {
                 $(this).removeClass('closed').addClass('open');
             }
-            $(this).closest('section').children('div').toggle();
+            $(this).closest('section').children('div, table').toggle();
         });
     },
     itemBindsUnbind: function() {
@@ -609,6 +623,7 @@ UI.prototype = {
                 }); 
             }
         });
+        $('.item .desc-tooltip').popover({});
         $('.itemAction .button.done, .itemAction .button.escalate').twipsy();
         $('.itemAction .button.delay, .itemAction .button.deescalate, .itemAdd > a').twipsy({placement:'below'});
         $('.editable-itemname').twipsy();
@@ -632,6 +647,30 @@ UI.prototype = {
                 that.storage.setItem(itemId,item,function(){});
             }
         });
+    },
+    fixItemStampHeight: function($items,itemsPerRow) {
+        var itemBuffer = [];
+        var itemHeights = [];
+        var hadToShow = false;
+        if ( $items.css('display') === 'none' ) {
+            hadToShow = true;
+            $items.css('display','block');
+        }
+        $items.children('.item').each(function(i){
+            itemBuffer.push($(this));
+            itemHeights.push($(this).height());
+            if ( itemBuffer.length === itemsPerRow ) {
+                var maxHeight = Math.max.apply(Math,itemHeights);
+                itemBuffer.forEach(function($item){
+                    $item.height(maxHeight);
+                });
+                itemBuffer = [];
+                itemHeights = [];
+            }
+        });
+        if ( hadToShow ) {
+            $items.css('display','none');
+        }
     },
     drawItems: function(cb,reload) {
         var that = this,
@@ -664,25 +703,22 @@ UI.prototype = {
                             decayed: 0,
                             done: 0,
                             deleted: 0
-                        };;
+                        };
                         $.each(that.storage.items,function(i,item){
                             var bucket = that.storage.getBucket(item.bucketId);
-                                if ( typeof(bucket) !== 'undefined' ) {
+                            if ( typeof(bucket) !== 'undefined' ) {
                                 item.bucketName = bucket.name;
                                 item.humanStatus = that.utils.humanStatus(item.status);
                                 var anItemTmpl = anItem;
                                 
-                                
-                                if ( ( item.status === 3 || item.status === 4 ) && (item.owner !== that.utils.currentMember()) ) {
-                                    item.ctr = ctr.notyours++;
-                                    that.tempItems.notyours.push(anItemTmpl(item));
-                                } else {
-                                    item.ctr = ctr[item.humanStatus]++;
-                                    if ( item.status === 2 ) { //incoming
-                                        anItemTmpl = anItemCell;
-                                    }
-                                    that.tempItems[item.humanStatus].push(anItemTmpl(item));
+                                if ( ( item.humanStatus === 'accepted' || item.humanStatus === 'current' ) && (item.owner !== that.utils.currentMember()) ) {
+                                    item.humanStatus = 'notyours';
                                 }
+                                item.ctr = ctr[item.humanStatus]++;        
+                                if ( item.humanStatus === 'incoming' || item.humanStatus === 'notyours') { //table view for incoming/notyours                    
+                                    anItemTmpl = anItemCell;
+                                }
+                                that.tempItems[item.humanStatus].push(anItemTmpl(item));
                             }
                         });
                         that.itemBindsUnbind();
@@ -690,9 +726,9 @@ UI.prototype = {
                         $('.dynamic.items').html(itemListTmpl(that.tempItems));
                         $('#items h1').each(function(){
                             if ( $(this).hasClass('open') ) {
-                                $(this).closest('section').children('div').show();
+                                $(this).closest('section').children('div, table').show();
                             } else {
-                                $(this).closest('section').children('div').hide();
+                                $(this).closest('section').children('div, table').hide();
                             }
                         });
                         that.itemBinds();
