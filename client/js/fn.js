@@ -96,12 +96,12 @@ Utils.prototype = {
         $.inlineEdit.defaults.cancelOnBlur = false;
         $.inlineEdit.defaults.buttons = '<button class="save">Save</button> <button class="cancel">Cancel</button>';
 
-        $.fn.twipsy.defaults.animate = false;
+        $.fn.twipsy.defaults.animate = true;
         $.fn.twipsy.defaults.delayIn = 100;
         $.fn.twipsy.defaults.delayOut = 0;
 
 
-        $.fn.popover.defaults.animate = false;
+        $.fn.popover.defaults.animate = true;
         $.fn.popover.defaults.delayIn = 0;
         $.fn.popover.defaults.delayOut = 0;
 
@@ -464,9 +464,6 @@ UI.prototype = {
 
             $('#items').show();
 
-            that.fixItemStampHeight($('.items.done.container'),4);
-            that.fixItemStampHeight($('.items.deleted.container'),4);
-
             that.itemLiveBinds();
             that.itemBinds();
         },true);
@@ -615,7 +612,7 @@ UI.prototype = {
             } else {
                 $(this).removeClass('closed').addClass('open');
             }
-            $(this).closest('section').children('div, table').toggle();
+            $(this).closest('section').children('div, table').slideToggle();
         });
     },
     itemBindsUnbind: function() {
@@ -623,6 +620,7 @@ UI.prototype = {
     },
     itemBinds: function() {
         var that = this;
+
         //init tablesorter, but only if it hasn't been already, and has at least 2 data row
         $('.tablesorter').each(function(i){
             if ( $(this).find('tr').length > 1 && (typeof $(this).data('tablesorter') === 'undefined' || $(this).data('tablesorter') === null) ) {
@@ -635,7 +633,7 @@ UI.prototype = {
                 }); 
             }
         });
-        $('.item .desc-tooltip').popover({});
+        $('.item .desc-tooltip').popover();
         $('.itemAction .button.done, .itemAction .button.escalate').twipsy();
         $('.itemAction .button.delay, .itemAction .button.deescalate, .itemAdd > a').twipsy({placement:'below'});
         $('.editable-itemname').twipsy();
@@ -660,18 +658,26 @@ UI.prototype = {
             }
         });
     },
+    fixStamps: function(that) {
+        that.fixItemStampHeight($('.items.done.container'),4);
+        that.fixItemStampHeight($('.items.deleted.container'),4);
+    },
     fixItemStampHeight: function($items,itemsPerRow) {
         var itemBuffer = [];
         var itemHeights = [];
         var hadToShow = false;
-        if ( $items.css('display') === 'none' ) {
+        if ( !$items.filter(':visible').length ) {
             hadToShow = true;
+            var originalDisplay = $items.css('display');
             $items.css('display','block');
+            console.log('setting display from '+originalDisplay+' to block');
         }
-        $items.children('.item').each(function(i){
+        $items.children('.item').each(function(){
             itemBuffer.push($(this));
-            itemHeights.push($(this).height());
+            itemHeights.push($(this).get(0).offsetHeight);
             if ( itemBuffer.length === itemsPerRow ) {
+                console.log($(this));
+                console.log(itemHeights);
                 var maxHeight = Math.max.apply(Math,itemHeights);
                 itemBuffer.forEach(function($item){
                     $item.height(maxHeight);
@@ -681,7 +687,10 @@ UI.prototype = {
             }
         });
         if ( hadToShow ) {
-            $items.css('display','none');
+            $items.css('display',originalDisplay);
+            console.log('setting display from block to '+originalDisplay+' for');
+            console.log($items);
+            console.log('--------------------------------------------------');
         }
     },
     drawItems: function(cb,reload) {
@@ -736,6 +745,7 @@ UI.prototype = {
                         that.itemBindsUnbind();
                         $('.dynamic.items').html('');
                         $('.dynamic.items').html(itemListTmpl(that.tempItems));
+
                         $('#items h1').each(function(){
                             if ( $(this).hasClass('open') ) {
                                 $(this).closest('section').children('div, table').show();
@@ -743,6 +753,13 @@ UI.prototype = {
                                 $(this).closest('section').children('div, table').hide();
                             }
                         });
+
+
+                        setTimeout(function(){ //lazy rendering sux
+                            that.fixStamps(that);
+                        },0);
+
+
                         that.itemBinds();
                         that.utils.refreshTimeago();
                         cb();

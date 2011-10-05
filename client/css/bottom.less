@@ -55,37 +55,37 @@
 }
 
 #popoverArrow {
-	.above(@arrowWidth: 5px) {
+	.above(@arrowWidth: 5px,@color: #000000) {
 		bottom: 0;
 		left: 50%;
 		margin-left: -@arrowWidth;
 		border-left: @arrowWidth solid transparent;
 		border-right: @arrowWidth solid transparent;
-		border-top: @arrowWidth solid @twipsyBackgroundColor;
+		border-top: @arrowWidth solid @color;
 	}
-	.left(@arrowWidth: 5px) {
+	.left(@arrowWidth: 5px,@color: #000000) {
 		top: 50%;
 		right: 0;
 		margin-top: -@arrowWidth;
 		border-top: @arrowWidth solid transparent;
 		border-bottom: @arrowWidth solid transparent;
-		border-left: @arrowWidth solid @twipsyBackgroundColor;
+		border-left: @arrowWidth solid @color;
 	}
-	.below(@arrowWidth: 5px) {
+	.below(@arrowWidth: 5px,@color: #000000) {
 		top: 0;
 		left: 50%;
 		margin-left: -@arrowWidth;
 		border-left: @arrowWidth solid transparent;
 		border-right: @arrowWidth solid transparent;
-		border-bottom: @arrowWidth solid @twipsyBackgroundColor;
+		border-bottom: @arrowWidth solid @color;
 	}
-	.right(@arrowWidth: 5px) {
+	.right(@arrowWidth: 5px,@color: #000000) {
 		top: 50%;
 		left: 0;
 		margin-top: -@arrowWidth;
 		border-top: @arrowWidth solid transparent;
 		border-bottom: @arrowWidth solid transparent;
-		border-right: @arrowWidth solid @twipsyBackgroundColor;
+		border-right: @arrowWidth solid @color;
 	}
 }
 
@@ -124,52 +124,52 @@
 }
 
 .popover {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  padding: 5px;
-  display: none;
-  &.above .arrow { #popoverArrow > .above(); }
-  &.right .arrow { #popoverArrow > .right(); }
-  &.below .arrow { #popoverArrow > .below(); }
-  &.left .arrow { #popoverArrow > .left(); }
-  .arrow {
-    position: absolute;
-    width: 0;
-    height: 0;
-  }
-  .inner {
-    background-color: @twipsyBackgroundColor;
-    background-color: rgba(0,0,0,.8);
-    padding: 3px;
-    overflow: hidden;
-    width: 280px;
-    .border-radius(6px);
-    .box-shadow(0 3px 7px rgba(0,0,0,0.3));
-  }
-  .title {
-    background-color: #f5f5f5;
-    padding: 9px 15px;
-    line-height: 1;
-    .border-radius(3px 3px 0 0);
-    border-bottom:1px solid #eee;
-    font-size: 18px;
-    line-height: 24px;
-    margin-bottom: 0;
-    span {
-    	font-weight: bold;
-    }
-  }
-  .content {
-    background-color: @twipsySecondaryBackroundColor;
-    padding: 14px;
-    .border-radius(0 0 3px 3px);
-    .background-clip(padding-box);
-    p, ul, ol {
-      margin-bottom: 0;
-    }
-  }
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1000;
+	padding: 5px;
+	display: none;
+	&.above .arrow { #popoverArrow > .above(5px,@borderColor); }
+	&.right .arrow { #popoverArrow > .right(5px,@borderColor); }
+	&.below .arrow { #popoverArrow > .below(5px,@borderColor); }
+	&.left .arrow { #popoverArrow > .left(5px,@borderColor); }
+	.arrow {
+		position: absolute;
+		width: 0;
+		height: 0;
+	}
+	.inner {
+		border: 1px solid darken(@borderColor,15%);
+		margin: 0;
+		padding: 1px;
+		background-color: darken(@borderColor,15%);
+		.border-radius(5px);
+		position: relative;
+		overflow: hidden;
+		min-width: 100px;
+		max-width: 280px;
+		.box-shadow(0 3px 7px rgba(0,0,0,0.3));
+	}
+	.title {
+		background-color: lighten(@borderColor,15%);
+		padding: 5px 3px;
+		.border-radius(3px 3px 0 0);
+		border-bottom:1px solid lighten(@borderColor,15%);
+		font-size: 14px;
+		line-height: 22px;
+		margin-bottom: 0;
+		font-weight: bold;
+	}
+	.content {
+		background-color: @twipsySecondaryBackroundColor;
+		padding: 3px;
+		.border-radius(0 0 3px 3px);
+		.background-clip(padding-box);
+		p, ul, ol {
+			margin-bottom: 0;
+		}
+	}
 }
 
 
@@ -589,7 +589,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Smaller than standard 960 (devices and browsers) */
 @media only screen and (max-width: 959px) {
-	.twipsy {
+	.twipsy, th {
 		display: none !important;
 	}
 	.itemAddContainer {

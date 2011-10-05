@@ -582,7 +582,14 @@
     setContent: function () {
       var $tip = this.tip()
       $tip.find('.title')[this.options.html ? 'html' : 'text'](this.getTitle())
-      $tip.find('.content p')[this.options.html ? 'html' : 'text'](this.getContent())
+      //TRADESHIFT WAS HERE
+      var content = this.getContent()
+      if ( typeof content === 'undefined' ) {
+        $tip.find('.content').remove()
+      } else {
+        $tip.find('.content p')[this.options.html ? 'html' : 'text'](this.getContent())
+      }
+      //TRADESHIFT WAS HERE
       $tip[0].className = 'popover'
     }
 
