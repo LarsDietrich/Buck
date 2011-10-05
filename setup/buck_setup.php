@@ -1,5 +1,7 @@
 <?php
 require_once('init.php');
+echo 'i guess you shouldn\'t run this without checking what it does first ;)';
+exit;
 echo 'deleting couchdb/buck'."\n";
 var_dump($couch->send('DELETE', '/buck')); 
 sleep(1);
@@ -132,6 +134,10 @@ $es->map('item','{
 				"store": "yes"
 			},
 			"created": {
+				"type": "integer",
+				"store": "yes"
+			},
+			"modified": {
 				"type": "integer",
 				"store": "yes"
 			},
