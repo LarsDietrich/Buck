@@ -14,7 +14,6 @@ $service = new Zend_Gdata_Gapps($client, $domain);
 
 echo 'retrieving all users from '.$domain."\n";
 $feed = $service->retrieveAllUsers();
-
 foreach ($feed as $user) {
     $couch->send('PUT','/buck/'.$user->login->username,json_encode(
 		array(

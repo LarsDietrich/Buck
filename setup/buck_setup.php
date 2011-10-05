@@ -1,6 +1,6 @@
 <?php
 require_once('init.php');
-echo 'i guess you shouldn\'t run this without checking what it does first ;)';
+echo 'i guess you shouldn\'t run this without checking what it does first ;) [hint: it\'s destructive!]';
 exit;
 echo 'deleting couchdb/buck'."\n";
 var_dump($couch->send('DELETE', '/buck')); 
