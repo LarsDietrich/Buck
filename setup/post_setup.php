@@ -1,13 +1,5 @@
 <?php
 require_once('init.php');
-#echo 'i guess you shouldn\'t run this without checking what it does first ;) [hint: it\'s destructive!]';
-#exit;
-echo 'deleting couchdb/buck'."\n";
-var_dump($couch->send('DELETE', '/buck')); 
-sleep(1);
-echo 'creating couchdb/buck'."\n";
-var_dump($couch->send('PUT', '/buck'));
-
 echo 'creating couchdb filters for river'."\n";
 $designs = json_encode(
 	array(
@@ -196,4 +188,4 @@ $es->map('bucket','{
 	}
 }');
 
-require_once('getmembers.php');
+
