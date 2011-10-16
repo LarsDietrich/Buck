@@ -40,6 +40,9 @@ Client.prototype = {
                 }
             }
         };
+        if ( typeof(apiUrl) !== 'undefined' ) {
+            requestParams.url = apiUrl;
+        }
         if ( data !== null ) {
             if ( method === 'POST' || method === 'PUT' ) {
                 $.extend(requestParams,{
@@ -333,7 +336,32 @@ Storage.prototype = {
         if ( ++this.ctr === parseInt(this.parallelCalls,10) ) {
             this.doneCb();
         }
-    }
+    },
+    getJoke: function(cb) {
+        var count = 0,
+            i = 0,
+            rand,
+            memberName;
+
+        for (k in this.members) {
+            if (this.members.hasOwnProperty(k)) {
+                ++count;
+            }
+        }
+        rand = (Math.floor(Math.random()*count+1)-1);
+        $.each(this.members,function(idx,member){
+            if ( ++i === rand ) {
+                memberName = member.name;
+                return true;
+            }
+        });
+        this.client.get('joke',{
+            name: memberName
+        },function(data){
+            cb(data.value.joke);
+        })
+        
+    },
 };
 
 function UI(storage,utils) {
@@ -362,6 +390,9 @@ UI.prototype = {
             var that = this;
             $.get('/tmpl/'+template+'.html',function(tmpl){
                 var parsedTemplate = that.parse(tmpl);
+                /**
+                 * @todo use localStorage, once the crunch settles
+                 */
                 that.templates[template] = parsedTemplate;
                 cb(parsedTemplate);
             });
@@ -635,7 +666,7 @@ UI.prototype = {
         });
         $('.item .desc-tooltip').popover();
         $('.itemAction .button.done, .itemAction .button.escalate').twipsy();
-        $('.itemAction .button.delay, .itemAction .button.deescalate, .itemAdd > a').twipsy({placement:'below'});
+        $('.itemAction .button.delay, .itemAction .button.deescalate, .itemAdd > a, .itembucket').twipsy({placement:'below'});
         $('.editable-itemname').twipsy();
         $('.editable-itemname').inlineEdit({
             save: function(e,data) {
@@ -670,14 +701,11 @@ UI.prototype = {
             hadToShow = true;
             var originalDisplay = $items.css('display');
             $items.css('display','block');
-            console.log('setting display from '+originalDisplay+' to block');
         }
         $items.children('.item').each(function(){
             itemBuffer.push($(this));
             itemHeights.push($(this).get(0).offsetHeight);
             if ( itemBuffer.length === itemsPerRow ) {
-                console.log($(this));
-                console.log(itemHeights);
                 var maxHeight = Math.max.apply(Math,itemHeights);
                 itemBuffer.forEach(function($item){
                     $item.height(maxHeight);
@@ -688,9 +716,6 @@ UI.prototype = {
         });
         if ( hadToShow ) {
             $items.css('display',originalDisplay);
-            console.log('setting display from block to '+originalDisplay+' for');
-            console.log($items);
-            console.log('--------------------------------------------------');
         }
     },
     drawItems: function(cb,reload) {
@@ -699,6 +724,9 @@ UI.prototype = {
                 reloadItems: function(cb){cb();}
             };
         $('.twipsy').remove();
+        this.storage.getJoke(function(joke){
+            $('.joke').html(joke);
+        });
 
         if ( typeof(reload) !== 'undefined' ) {
             loadItems = this.storage;

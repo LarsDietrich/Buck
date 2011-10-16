@@ -1,6 +1,6 @@
 <tr class="item (@= data.humanStatus @) sixteen columns" data-id="(@= data.itemId @)">
-	<td class="nine columns alpha"><h2 class="desc-tooltip" title="from (@= data.submitter @)" (@= ((data.desc!==""?"data-content=\""+data.desc.replace(/[\\"]/g, "\\$&").replace(/\u0000/g, "\\0")+"\"":"")) @)">(@= data.name @)</h2></span></td>
-	<td class="three columns itembucket">(@= data.bucketName @)</td>
+	<td class="nine columns alpha"><h2 class="desc-tooltip" title="from (@= data.submitter @)" (@= ((data.desc!==""?"data-content=\""+data.desc.replace(/[\\"]/g, "\\$&").replace(/\u0000/g, "\\0")+"\"":"")) @)">(@= data.name @)</h2></td>
+	<td class="three columns itembucket" title="Click to mark item as done">(@= data.bucketName @)</td>
 	<td class="two columns"><time class="timeago" datetime="(@= data.created @)">(@= data.created @)</time></td>
 	<td class="two columns omega clearfix itemAction">
 		<div class="one column alpha">
