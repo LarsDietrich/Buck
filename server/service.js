@@ -1,5 +1,5 @@
 var journey = require('journey'),
-	http = require('http'),
+	nodeHttp = require('http'),
 	fs = require('fs'),
 	style = require('../client/style.js');
 
@@ -38,6 +38,16 @@ exports.createRouter = function(resources){
 		//GET /login
 		this.get().bind(function(req,res,params){
 			fs.readFile('client/login.html','utf-8',function(err,data){
+				if (err){return res.send(500,{},{error:err});}
+				res.baseResponse.headers = {'Content-Type':'text/html'};
+				res.sendBody(data);
+			});
+		});
+	});
+	router.path('/fibonacci',function(){
+		//GET /login
+		this.get().bind(function(req,res,params){
+			fs.readFile('client/fibonacci.html','utf-8',function(err,data){
 				if (err){return res.send(500,{},{error:err});}
 				res.baseResponse.headers = {'Content-Type':'text/html'};
 				res.sendBody(data);
@@ -106,6 +116,31 @@ exports.createRouter = function(resources){
 		});
 	});
 	router.path('/api',function(){
+		this.path('/joke',function(){
+			this.get().bind(function(req,res,name,params){
+				var firstName = name.name.substr(0,name.name.indexOf(' ')),
+					lastName = name.name.substr(name.name.indexOf(' ')+1);
+				var options = {
+					host: 'api.icndb.com',
+					port: 80,
+					path: '/jokes/random?firstName='+encodeURIComponent(firstName)+'&lastName='+encodeURIComponent(lastName),
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+						'Connection': 'keep-alive',
+						'User-Agent': 'Yo mama'
+					}
+				};
+				nodeHttp.get(options, function(jokeRes) {
+					jokeRes.setEncoding('utf-8');
+					jokeRes.on('data', function (chunk) {
+						res.sendBody(chunk);
+					});
+				}).on('error', function(e) {
+					return res.send(500,{},{error:e});
+				});
+			});
+		});
 		this.path('/buckets',function(){
 			//GET /buckets
 			this.get().bind(function(req,res,params){
