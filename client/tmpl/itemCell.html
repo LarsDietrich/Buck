@@ -1,5 +1,10 @@
 <tr class="item (@= data.humanStatus @) sixteen columns" data-id="(@= data.itemId @)">
-	<td class="nine columns alpha"><h2 class="desc-tooltip" title="from (@= data.submitter @)" (@= ((data.desc!==""?"data-content=\""+data.desc.replace(/[\\"]/g, "\\$&").replace(/\u0000/g, "\\0")+"\"":"")) @)">(@= data.name @)</h2></td>
+	<td class="nine columns alpha itemMeta">
+		<h2 class="editable-itemname" title="Click to edit title">(@= data.name @)</h2>
+		<div class="desc">
+			<p><span class="editable-itemdesc desctext" title="Click to edit description">(@= data.desc @)</span> // by <span class="meta">(@= data.submitter @)</span> in <span class="meta itembucket" title="Click to move item to another bucket">(@= data.bucketName @)</span></p> 
+		</div>
+	</td>
 	<td class="three columns itembucket" title="Click to mark item as done">(@= data.bucketName @)</td>
 	<td class="two columns"><time class="timeago" datetime="(@= data.created @)">(@= data.created @)</time></td>
 	<td class="two columns omega clearfix itemAction">

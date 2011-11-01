@@ -35,6 +35,8 @@ Bucket.prototype.list = function(cb,params) {
 			filter.query.filtered.filter.term.memberHandles = params.m;
 		}
 	}
+	console.log('bucket list filter:');
+	console.log(JSON.stringify(filter));
 	this.es.search(common.esIndex,'bucket',filter)
 		.on('data',function(data){
      		data = JSON.parse(data);

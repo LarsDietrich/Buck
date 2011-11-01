@@ -287,6 +287,9 @@ Storage.prototype = {
         if ( item.name === '' ) {
             alert('Item name cannot be empty!');
         } else {
+            /**
+             @todo UNIX timestamp
+            */
             item.modified = new Date();
             this.items[itemId] = item;
             cb();

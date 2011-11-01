@@ -23,11 +23,11 @@ if ( data.humanStatus === "deleted" || data.humanStatus === "done" || data.human
 }
 
 var editable = false;
-if (data.humanStatus!=="deleted"&&data.humanStatus!=="decayed"&&data.humanStatus!=="notyours"&&data.humanStatus!=="done") {
+if (data.humanStatus!=="deleted"&&data.humanStatus!=="decayed"&&data.humanStatus!=="notyours"&&data.humanStatus!=="done"&&data.humanStatus!=="incoming") {
 	editable = true;
 }
 var deletable = false;
-if (data.humanStatus!=="deleted"&&data.humanStatus!=="notyours"&&data.humanStatus!=="done"&&data.humanStatus!=="decayed") {
+if (data.humanStatus!=="deleted"&&data.humanStatus!=="notyours"&&data.humanStatus!=="done"&&data.humanStatus!=="decayed"&&data.humanStatus!=="incoming") {
 	deletable = true;
 }
 @)
