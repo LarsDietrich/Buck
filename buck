@@ -11,6 +11,7 @@ var help = [
 	"",
 	"options:",
 	"  -p             Port that you want the home server to run on      [80]",
+	"  -l             File to log to      [/var/log/buck.log]",
 	"  -h, --help     You're staring at it",
 ].join('\n');
 
@@ -20,9 +21,11 @@ if (argv.h || argv.help) {
 
 var esIndex = 'buck';
 var options = {
-	port: argv.p || 80
+	port: argv.p || 80,
+	logFile: argv.l || '/var/log/buck.log'
 };
 
+console.log(options);
 
 var buck = require('./server/main');
 
