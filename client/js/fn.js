@@ -462,8 +462,8 @@ UI.prototype = {
                 return results;
             },
             onAdd: function(item) {
-                $.cookie('buckUserName', item.name);
-                $.cookie('buckUserId', item.id);
+                $.cookie('buckUserName', item.name,{expires:365});
+                $.cookie('buckUserId', item.id,{expires:365});
                 document.location = '/';
             },
         });
