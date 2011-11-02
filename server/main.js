@@ -39,7 +39,7 @@ exports.createServer = function(port,db,es){
 
 exports.start = function (options, cb) {
 	winston.add(winston.transports.File, { filename: options.logFile });
-	winston.remove(winston.transports.Console);
+	//winston.remove(winston.transports.Console);
 	var db = database.setup(options,function(err,db){
 		if (err) {
 			return cb(err);
