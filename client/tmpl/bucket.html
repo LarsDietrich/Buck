@@ -10,10 +10,11 @@
 			var memberCount = data.members.length;
 			if ( memberCount ) {
 				data.members.forEach(function(member){
-				console.log(member);
-				@)
-					<span>(@= member.name @)</span>
-				(@	
+					if ( typeof member !== "undefined" ) {
+						@)
+							<span>(@= member.name @)</span>
+						(@
+					}	
 				});
 			}
 			@)
