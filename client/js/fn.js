@@ -527,9 +527,7 @@ UI.prototype = {
 
 			that.storage.getBucket(bucketId).memberHandles.forEach(function(memberHandle){
 				var member = this.storage.getMember(memberHandle);
-				if ( typeof member !== 'undefined' ) {
-					members.push({id:memberHandle,name:member.name});
-				}
+				members.push({id:memberHandle,name:member.name});
 			},that);
 			$(this).tokenInput('/api/members',{
 				prePopulate: members,
