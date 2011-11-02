@@ -196,7 +196,10 @@ exports.createRouter = function(resources){
 						if (err){return res.send(500,{},{error:err});}
 						if ( typeof(buckets) !== 'undefined' ) {
 							winston.log('got '+buckets.length+' buckets:');
-							winston.log('buckets:'+JSON.stringify(buckets));
+							
+							buckets.forEach(function(bucket,i){
+								winston.log(bucket.name);
+							});
 							var ctr = buckets.length;
 							var _items = [];
 							buckets.forEach(function(bucket,i){
