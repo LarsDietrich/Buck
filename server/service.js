@@ -194,12 +194,9 @@ exports.createRouter = function(resources){
 					winston.log('getting buckets/items for member: '+params.m );
 					resources.bucket.list(function(err,buckets){
 						if (err){return res.send(500,{},{error:err});}
+						winston.log('buckets='+JSON.stringify(buckets));
 						if ( typeof(buckets) !== 'undefined' ) {
 							winston.log('got '+buckets.length+' buckets:');
-							
-							buckets.forEach(function(bucket,i){
-								winston.log(bucket.name);
-							});
 							var ctr = buckets.length;
 							var _items = [];
 							buckets.forEach(function(bucket,i){
