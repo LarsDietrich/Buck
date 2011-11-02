@@ -9,7 +9,8 @@
 			console.log(data);
 			var memberCount = data.members.length;
 			if ( memberCount ) {
-				data.members.forEach(function(member,memberNum){
+				data.members.forEach(function(member){
+				console.log(member);
 				@)
 					<span>(@= member.name @)</span>
 				(@	
