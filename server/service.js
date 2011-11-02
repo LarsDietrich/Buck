@@ -191,27 +191,27 @@ exports.createRouter = function(resources){
 			//GET /items
 			this.get().bind(function(req,res,params){
 				if ( typeof(params.m) !== 'undefined' ) {
-					winston.log('getting buckets/items for member: '+params.m );
+					console.log('getting buckets/items for member: '+params.m );
 					resources.bucket.list(function(err,buckets){
 						if (err){return res.send(500,{},{error:err});}
-						winston.log('buckets='+JSON.stringify(buckets));
+						console.log('buckets='+JSON.stringify(buckets));
 						if ( typeof(buckets) !== 'undefined' ) {
-							winston.log('got '+buckets.length+' buckets:');
+							console.log('got '+buckets.length+' buckets:');
 							var ctr = buckets.length;
 							var _items = [];
 							buckets.forEach(function(bucket,i){
 								resources.item.list(function(err,items){
 									if (err){return res.send(500,{},{error:err});}
-									winston.log('items = '+JSON.stringify(items));
+									console.log('items = '+JSON.stringify(items));
 									if (typeof items !== 'undefined') {
-										winston.log('getting items for bucket: '+bucket.name);
-										winston.log('got '+items.length+' items');
+										console.log('getting items for bucket: '+bucket.name);
+										console.log('got '+items.length+' items');
 										_items = _items.concat(items);
 									}
 									ctr -= 1;
-									winston.log('ctr is '+ctr);
+									console.log('ctr is '+ctr);
 									if ( ctr === 0 ) {
-										winston.log('sending data back');
+										console.log('sending data back');
 										res.send(200,{},_items);
 									}
 								},{b:bucket.bucketId});
@@ -234,7 +234,7 @@ exports.createRouter = function(resources){
 			});
 			//GET /items/q/:query
 			this.get(/q\/(.*)/).bind(function(req,res,query,params){
-				winston.log(query);
+				console.log(query);
 				resources.item.list(function(err,items){
 					if (err){return res.send(500,{},{error:err});}
 					res.send(200,{},items);
@@ -256,8 +256,8 @@ exports.createRouter = function(resources){
 			});
 			//PUT /items/:id
 			this.put(/\/([a-zA-Z0-9_-]+)/).bind(function(req,res,itemId,item){
-				winston.log(itemId);
-				winston.log(item);
+				console.log(itemId);
+				console.log(item);
 				resources.item.update(itemId,item,function(err,updated){
 					if (err){return res.send(500,{},{error:updated});}
 					res.send(200,{},{updated:updated});
