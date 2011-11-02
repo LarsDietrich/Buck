@@ -202,6 +202,7 @@ exports.createRouter = function(resources){
 							buckets.forEach(function(bucket,i){
 								resources.item.list(function(err,items){
 									if (err){return res.send(500,{},{error:err});}
+									winston.log('items = '+JSON.stringify(items));
 									if (typeof items !== 'undefined') {
 										winston.log('getting items for bucket: '+bucket.name);
 										winston.log('got '+items.length+' items');
