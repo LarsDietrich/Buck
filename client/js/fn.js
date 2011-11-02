@@ -471,7 +471,6 @@ UI.prototype = {
 		var that = this;
 		if ( mode === 'buckets' ) {
 			this.storage.reloadBuckets(function(){
-				console.log(that);
 				that.beforeSwitch();
 				that.bucketsMode();
 				cb();
