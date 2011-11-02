@@ -13,3 +13,4 @@ Icon?
 *.sock
 *.old
 secret.php
+secret.js
