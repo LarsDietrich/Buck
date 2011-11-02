@@ -65,6 +65,16 @@ exports.createRouter = function(resources){
 			});
 		});
 	});
+	router.path('/favicon.ico',function(){
+		//GET /favicon.ico
+		this.get().bind(function(req,res,params){
+			fs.readFile('client/favicon.ico',function(err,data){
+				if (err){return res.send(500,{},{error:err});}
+				res.baseResponse.headers = {'Content-Type':'image/vnd.microsoft.icon'};
+				res.sendBody(data);
+			});
+		});
+	});
 	router.path('/fn.js',function(){
 		//GET /fn.js
 		this.get().bind(function(req,res,params){
@@ -191,27 +201,27 @@ exports.createRouter = function(resources){
 			//GET /items
 			this.get().bind(function(req,res,params){
 				if ( typeof(params.m) !== 'undefined' ) {
-					console.log('getting buckets/items for member: '+params.m );
+					winston.log('getting buckets/items for member: '+params.m );
 					resources.bucket.list(function(err,buckets){
 						if (err){return res.send(500,{},{error:err});}
-						console.log('buckets='+JSON.stringify(buckets));
+						winston.log('buckets='+JSON.stringify(buckets));
 						if ( typeof(buckets) !== 'undefined' ) {
-							console.log('got '+buckets.length+' buckets:');
+							winston.log('got '+buckets.length+' buckets:');
 							var ctr = buckets.length;
 							var _items = [];
 							buckets.forEach(function(bucket,i){
 								resources.item.list(function(err,items){
 									if (err){return res.send(500,{},{error:err});}
-									console.log('items = '+JSON.stringify(items));
+									winston.log('items = '+JSON.stringify(items));
 									if (typeof items !== 'undefined') {
-										console.log('getting items for bucket: '+bucket.name);
-										console.log('got '+items.length+' items');
+										winston.log('getting items for bucket: '+bucket.name);
+										winston.log('got '+items.length+' items');
 										_items = _items.concat(items);
 									}
 									ctr -= 1;
-									console.log('ctr is '+ctr);
+									winston.log('ctr is '+ctr);
 									if ( ctr === 0 ) {
-										console.log('sending data back');
+										winston.log('sending data back');
 										res.send(200,{},_items);
 									}
 								},{b:bucket.bucketId});
@@ -234,7 +244,7 @@ exports.createRouter = function(resources){
 			});
 			//GET /items/q/:query
 			this.get(/q\/(.*)/).bind(function(req,res,query,params){
-				console.log(query);
+				winston.log(query);
 				resources.item.list(function(err,items){
 					if (err){return res.send(500,{},{error:err});}
 					res.send(200,{},items);
@@ -256,8 +266,8 @@ exports.createRouter = function(resources){
 			});
 			//PUT /items/:id
 			this.put(/\/([a-zA-Z0-9_-]+)/).bind(function(req,res,itemId,item){
-				console.log(itemId);
-				console.log(item);
+				winston.log(itemId);
+				winston.log(item);
 				resources.item.update(itemId,item,function(err,updated){
 					if (err){return res.send(500,{},{error:updated});}
 					res.send(200,{},{updated:updated});

@@ -1,0 +1,17 @@
+<div class="buckets container">
+	<div class="bucket newBucketContainer sixteen columns">
+		<div class="bucketMeta">
+			<input name="bucketName" placeholder="New Bucket's name"/>
+			<div class="desc">
+				<input name="bucketDesc" placeholder="New Bucket's description" />
+			</div>
+			<div class="members">
+			</div>
+			<button class="newBucket">Save</button>
+		</div>
+		<br class="clear" />
+	</div>
+    (@ data.forEach(function(bucket){ @)
+        (@= bucket @)
+    (@ }); @)
+</div>

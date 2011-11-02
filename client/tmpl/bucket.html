@@ -1,0 +1,21 @@
+<div class="bucket sixteen columns" data-id="(@= data.bucketId @)">
+	<div class="bucketMeta">
+		<h2 class="editable-bucketname" title="Click to edit title">(@= data.name @)</h2>
+		<div class="desc">
+			<p><span class="editable-bucketdesc desctext" title="Click to edit description">(@= data.desc @)</span></p> 
+		</div>
+		<div class="members">
+			(@
+			var memberCount = data.members.length;
+			data.members.forEach(function(member,memberNum){
+			@)
+				<span>(@= member.name @)</span>
+			(@	
+			});
+			@)
+		</div>
+		<button class="hidden saveMembers">Save</button>
+	</div>
+	<br class="clear" />
+	<div class="delete button">x</div>
+</div>

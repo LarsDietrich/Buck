@@ -37,6 +37,9 @@ Member.prototype.list = function(cb,params) {
      		}
 		})
 		.on('done',function(){
+			_data.forEach(function(member,idx){
+				_data[idx].id = member._id;
+			});
      		cb(null,_data);
 		})
 		.on('error',function(err){

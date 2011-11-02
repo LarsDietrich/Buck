@@ -4,7 +4,6 @@ var http = require('http'),
 	elasticSearchClient = require('./elasticsearch'),
 	rsc = require('./resources'),
 	common = require('./common'),
-	secret = require('./secret'),
 	service = require('./service');
 
 exports.createServer = function(port,db,es){

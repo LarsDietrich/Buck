@@ -36,8 +36,8 @@ Bucket.prototype.list = function(cb,params) {
 			filter.query.filtered.filter.term.memberHandles = params.m;
 		}
 	}
-	winston.log('bucket list filter:');
-	winston.log(JSON.stringify(filter));
+	console.log('bucket list filter:');
+	console.log(JSON.stringify(filter));
 	this.es.search(common.esIndex,'bucket',filter)
 		.on('data',function(data){
      		data = JSON.parse(data);
