@@ -1,4 +1,5 @@
 var common = require('./common'),
+	winston = require('winston'),
 	helpers = require('./helpers');
 
 var Bucket = exports.Bucket = function(db,es) {
