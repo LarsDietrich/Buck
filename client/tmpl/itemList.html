@@ -7,17 +7,28 @@ $.each(data,function(status,items){
 	}
 @)
 	<section id="items-(@= status @)">
-		<h1 class="sixteen columns row add-bottom (@= (items.length&&(status==="current"||status==="incoming"||status==="accepted"))?"open":"closed" @)">(@= status @) <span>((@= items.length@))</span></h1>
+		<h1 class="sixteen columns row add-bottom (@= (items.length&&(status==="current"||status==="incoming"||status==="accepted"||status==="notyours"))?"open":"closed" @)">(@= status @) <span>((@= items.length@))</span></h1>
 		<br class="clear" />
 		<div class="items (@= status @) container">
 			(@ if (isTableView) { @)
+				(@ if (status==="notyours") { @)
+				<table class="tablesorter-notyours">
+				(@ } else { @)
 				<table class="tablesorter">
+				(@ } @)
 					<thead>
 						<tr class="sixteen columns add-bottom">
-							<th class="nine columns alpha">Name</th>
-							<th class="three columns">Bucket</th>
-							<th class="four columns omega">Modified</th>
-							<th class="hidden">&nbsp;</th>
+							(@ if (status==="notyours") { @)
+								<th class="eight columns alpha">Name</th>
+								<th class="three columns">Bucket</th>
+								<th class="three columns">Owner</th>
+								<th class="two columns">Status</th>
+							(@ } else { @)
+								<th class="nine columns alpha">Name</th>
+								<th class="three columns">Bucket</th>
+								<th class="four columns omega">Modified</th>
+								<th class="hidden">&nbsp;</th>
+							(@ } @)
 						</tr>
 					</thead>
 					<tbody>

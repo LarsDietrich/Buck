@@ -838,7 +838,7 @@ UI.prototype = {
 		var that = this;
 
 		//init tablesorter, but only if it hasn't been already, and has at least 2 data row
-		$('.tablesorter').each(function(i){
+		$('.tablesorter-simple').each(function(i){
 			if ( $(this).find('tr').length > 1 && (typeof $(this).data('tablesorter') === 'undefined' || $(this).data('tablesorter') === null) ) {
 				$(this).tablesorter({
 					sortList: [[2,1]],
@@ -846,6 +846,13 @@ UI.prototype = {
 						2:{sorter: 'timeago'},
 						3:{sorter: false}
 					}
+				}); 
+			}
+		});
+		$('.tablesorter-notyours').each(function(i){
+			if ( $(this).find('tr').length > 1 && (typeof $(this).data('tablesorter') === 'undefined' || $(this).data('tablesorter') === null) ) {
+				$(this).tablesorter({
+					sortList: [[3,1]]
 				}); 
 			}
 		});
@@ -946,6 +953,7 @@ UI.prototype = {
 								
 								if ( ( item.humanStatus === 'accepted' || item.humanStatus === 'current' ) && (item.owner !== that.utils.currentMember()) ) {
 									item.humanStatus = 'notyours';
+									item.ownerName = that.storage.getMember(item.owner).name;	
 								}
 								item.ctr = ctr[item.humanStatus]++;        
 								if ( item.humanStatus === 'incoming' || item.humanStatus === 'notyours') { //table view for incoming/notyours                    

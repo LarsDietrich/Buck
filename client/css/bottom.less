@@ -682,19 +682,7 @@ div.token-input-dropdown {
 				}
 			}
 		}
-		&.incoming {
-			.itemMeta {
-				h2 {
-					font-size: 14px;
-				}
-			}
-			.itemAction {
-				.escalate, .delay {
-					display: block;
-				}
-			}
-		}
-		&.notyours, &.decayed, &.deleted, &.done {
+		&.decayed, &.deleted, &.done {
 			.desc {
 				display: none;
 			}
@@ -715,8 +703,21 @@ div.token-input-dropdown {
 			}
 			word-wrap: break-word;
 		}
-		&.incoming {
+		&.incoming, &.notyours {
+			.itemMeta {
+				h2 {
+					font-size: 14px;
+				}
+			}
+			.itemAction {
+				.escalate, .delay {
+					display: block;
+				}
+			}
 			.desc {
+				display: block;
+			}
+			.delete {
 				display: block;
 			}
 		}
@@ -748,11 +749,6 @@ div.token-input-dropdown {
 			.deescalate {
 				display: block !important;
 			}
-		}
-	}
-	.items.notyours {
-		.button {
-			display: none !important;
 		}
 	}
 }
