@@ -952,6 +952,7 @@ UI.prototype = {
 								var anItemTmpl = anItem;
 								
 								if ( ( item.humanStatus === 'accepted' || item.humanStatus === 'current' ) && (item.owner !== that.utils.currentMember()) ) {
+									item.realHumanStatus = item.humanStatus;
 									item.humanStatus = 'notyours';
 									item.ownerName = that.storage.getMember(item.owner).name;	
 								}
