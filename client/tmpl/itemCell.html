@@ -14,14 +14,14 @@
 		<div class="delete button">x</div>
 	</td>
 (@ } else { @)
-	<td class="nine columns alpha itemMeta">
+	<td class="eleven columns alpha itemMeta">
 		<h2 class="editable-itemname" title="Click to edit title">(@= data.name @)</h2>
 		<div class="desc">
 			<p><span class="editable-itemdesc desctext" title="Click to edit description">(@= data.desc @)</span> // by <span class="meta">(@= data.submitter @)</span> in <span class="meta itembucket" title="Click to move item to another bucket">(@= data.bucketName @)</span></p> 
 		</div>
 	</td>
 	<td class="three columns itembucket">(@= data.bucketName @)</td>
-	<td class="two columns"><time class="timeago" datetime="(@= data.modified @)">(@= data.modified @)</time></td>
+	<!--<td class="two columns"><time class="timeago" datetime="(@= data.modified @)">(@= data.modified @)</time></td>-->
 	<td class="two columns omega clearfix itemAction">
 		<div class="one column alpha">
 			<a class="done button" title="Click to mark item as done">y</a>

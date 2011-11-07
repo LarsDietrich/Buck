@@ -1604,7 +1604,15 @@ $.TokenList = function (input, url_or_data, settings) {
             });
 
         // Store data on the token
-        var token_data = {"id": item.id};
+
+        //TRADESHIFT WAS HERE
+        if ( typeof item._id !== 'undefined' ) {
+          var token_data = {"id": item._id}; 
+        } else {
+          var token_data = {"id": item.id}; 
+        }
+        //TRADESHIFT WAS HERE
+        
         token_data[settings.propertyToSearch] = item[settings.propertyToSearch];
         $.data(this_token.get(0), "tokeninput", item);
 
@@ -1795,7 +1803,11 @@ $.TokenList = function (input, url_or_data, settings) {
 
     // Highlight the query part of the search term
     function highlight_term(value, term) {
-        return value.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + term + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<b>$1</b>");
+    	if ( typeof value !== 'undefined' ) {
+	        return value.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + term + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<b>$1</b>");
+	    } else {
+	    	return '';
+	    }
     }
 
     function find_value_and_highlight_term(template, value, term) {

@@ -9,6 +9,12 @@
 	<link rel="shortcut icon" href="/favicon.ico" />
 </head>
 <body>
+	<div class="sm960">Smaller than standard 960</div>
+	<div class="tabpo">Tablet Portrait size to standard 960</div>
+	<div class="allmob">All Mobile Sizes</div>
+	<div class="mola">Mobile Landscape Size to Tablet Portrait</div>
+	<div class="mopo">Mobile Portrait Size to Mobile Landscape Size</div>
+
 	<div id="background" class="noselect"></div>
 	<div class="container">
 		<div class="joke"></div>
@@ -27,23 +33,18 @@
 		<br class="clear" />
 
 		<section id="items">
-			<div class="twelve columns offset-by-two">
-				<input name="q" type="search" class="search" placeholder="Search for anything" />
+			<div class="six columns alpha">
+				<input name="q" tabindex="0" type="search" class="search" placeholder="Search for anything" />
 			</div>
-			<br class="clear" />
-			<div class="itemAdd"><a href="#" class="button" title="Click to add new item">+</a></div>
-			<div class="five columns offset-by-eleven itemAddDialogContainer">
-				<div class="itemAddDialog">
-					<input name="itemName" placeholder="Name" tabindex="1" />
-					<textarea name="itemDesc" tabindex="2" placeholder="Description"></textarea>
-					<select name="itemBucket" class="dynamic" tabindex="3"></select>
+			<div class="four columns">
+				&nbsp;
+			</div>
+			<div class="six columns omega itemAddDialog">
+					<input name="itemName" class="itemName" placeholder="New Item's Name" tabindex="0" />
+					<input name="itemBucket" class="itemBucket" placeholder="New Item's Bucket" tabindex="0" />
+					<input name="itemDesc" class="itemDesc" placeholder="New Item's Description" tabindex="0" />
 					<br class="clear" />
-					<div>
-						<button class="save button" tabindex="4">Save Item</button>
-						<a class="cancel button">Cancel</a>
-					</div>
-					<br class="clear" />
-				</div>
+						<button class="save button" tabindex="4">Save New Item</button>
 			</div>
 			<br class="clear" />
 			<div class="items dynamic row"></div>

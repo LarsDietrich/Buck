@@ -1,17 +1,3 @@
-$(function(){
-	// function supports_html5_storage() {
-	//     try {
-	//         return 'localStorage' in window && window['localStorage'] !== null;
-	//     } catch (e) {
-	//         return false;
-	//     }
-	// }
-	// if ( !supports_html5_storage() ) {
-	//     $('html').html('<h1>Unsupported browser</h1>');
-	// }
-	//window.history.replaceState('data','title','/#url');
-});
-
 function Client() {
 	this.init();
 }
@@ -102,8 +88,6 @@ Utils.prototype = {
 		$.fn.twipsy.defaults.animate = true;
 		$.fn.twipsy.defaults.delayIn = 100;
 		$.fn.twipsy.defaults.delayOut = 0;
-
-
 		$.fn.popover.defaults.animate = true;
 		$.fn.popover.defaults.delayIn = 0;
 		$.fn.popover.defaults.delayOut = 0;
@@ -168,32 +152,32 @@ Utils.prototype = {
 		return $.cookie('buckUserId');
 	},
 	arrayUnique: function(inputArr) {
-	    var key = '',
-	        tmp_arr2 = {},
-	        val = '';
+		var key = '',
+			tmp_arr2 = {},
+			val = '';
 
-	    var __array_search = function (needle, haystack) {
-	        var fkey = '';
-	        for (fkey in haystack) {
-	            if (haystack.hasOwnProperty(fkey)) {
-	                if ((haystack[fkey] + '') === (needle + '')) {
-	                    return fkey;
-	                }
-	            }
-	        }
-	        return false;
-	    };
+		var __array_search = function (needle, haystack) {
+			var fkey = '';
+			for (fkey in haystack) {
+				if (haystack.hasOwnProperty(fkey)) {
+					if ((haystack[fkey] + '') === (needle + '')) {
+						return fkey;
+					}
+				}
+			}
+			return false;
+		};
 
-	    for (key in inputArr) {
-	        if (inputArr.hasOwnProperty(key)) {
-	            val = inputArr[key];
-	            if (false === __array_search(val, tmp_arr2)) {
-	                tmp_arr2[key] = val;
-	            }
-	        }
-	    }
+		for (key in inputArr) {
+			if (inputArr.hasOwnProperty(key)) {
+				val = inputArr[key];
+				if (false === __array_search(val, tmp_arr2)) {
+					tmp_arr2[key] = val;
+				}
+			}
+		}
 
-	    return tmp_arr2;
+		return tmp_arr2;
 	}
 
 };
@@ -416,11 +400,9 @@ UI.prototype = {
 
 		this.menu();
 
-		this.tokenInputUrl = '/api/members/';
 		this.tokenInputOptions = {
-			theme: 'facebook',
-			searchDelay: 100,
-			'_className': 'token-input-list-facebook'
+			_classname: 'token-input-list',
+			searchDelay: 100
 		};
 	},
 	getTmpl: function(template,cb) {
@@ -489,7 +471,8 @@ UI.prototype = {
 		}
 	},
 	loginMode: function() {
-		$("input.login").tokenInput('/api/members',{
+		var that = this;
+		$("input.login").tokenInput('/api/members',$.extend(that.tokenInputOptions,{
 			hintText: 'Enter your name or handle',
 			tokenLimit: 1,
 			onResult: function(results) {
@@ -503,7 +486,7 @@ UI.prototype = {
 				$.cookie('buckUserId', item.id,{expires:365});
 				document.location = '/';
 			},
-		});
+		}));
 	},
 
 	bucketsMode: function() {
@@ -526,57 +509,60 @@ UI.prototype = {
 
 			that.storage.getBucket(bucketId).memberHandles.forEach(function(memberHandle){
 				var member = this.storage.getMember(memberHandle);
-				members.push({id:memberHandle,name:member.name});
+				members.push({_id:memberHandle,name:member.name});
 			},that);
-			$(this).tokenInput('/api/members',{
+			$(this).tokenInput('/api/members',$.extend(that.tokenInputOptions,{
 				prePopulate: members,
 				preventDuplicates: true,
 				hintText: 'Enter a name or handle'
-			});
+			}));
 		});
 		$(".bucket .saveMembers").live('click',function () {
 			var $container = $(this).closest('.bucket'),
 				bucketId = $container.attr('data-id'),
 				bucket = that.storage.getBucket(bucketId),
 				members = [];
-            $(this).siblings('.members').tokenInput("get").forEach(function(member){
-            	members.push(member.id);
-            });
-           	
+			$(this).siblings('.members').tokenInput("get").forEach(function(member){
+				members.push(member.id);
+			});
+			
 			//bucket.memberHandles = that.utils.arrayUnique(members);
 			bucket.memberHandles = members;
 			that.storage.setBucket(bucketId,bucket,function(){
 				that.drawBuckets(function(){});
 			});
-        });
-        $(".bucket .delete").live('click',function () {
+		});
+		$(".bucket .delete").live('click',function () {
 			var $container = $(this).closest('.bucket'),
-				bucketId = $container.attr('data-id');
-			that.storage.removeBucket(bucketId,function(){
-				that.drawBuckets(function(){});
-			});
+				bucketId = $container.attr('data-id'),
+				bucket = that.storage.getBucket(bucketId);
+			if ( confirm('Are you sure you want to delete '+bucket.name+'?') ) {
+				that.storage.removeBucket(bucketId,function(){
+					that.drawBuckets(function(){});
+				});
+			}
 		});
 		$('.bucket .newBucket').live('click',function(){
 			var $container = $(this).closest('.bucket'),
 				members = [];
 
 			$(this).siblings('.members').tokenInput("get").forEach(function(member){
-            	members.push(member.id);
-            });
+				members.push(member._id);
+			});
 
 			var newBucket = {
 				name: $container.find('input[name=bucketName]').val(),
 				desc: $container.find('input[name=bucketDesc]').val(),
 				memberHandles: members
 			};
-            that.storage.newBucket(newBucket,function(){
-            	that.drawBuckets(function(){});
-            });
+			that.storage.newBucket(newBucket,function(){
+				that.drawBuckets(function(){});
+			});
 		});
 	},
 	bucketBindsUnbind: function() {
 		$('.editable-bucketname, .editable-bucketdesc').unbind();
-		$('.newBucketContainer .members').data('tokenInputObject',undefined);
+		$('.newBucketContainer .members').removeData('tokenInputObject');
 		$('#buckets').find('.token-input-list').remove();
 
 	},
@@ -669,7 +655,7 @@ UI.prototype = {
 			$.each(that.storage.buckets,function(bucketId,bucket){
 				bucketOptions += '<option value="'+bucketId+'" data-name="'+bucket.name+'">'+bucket.name+'</option>';
 			});
-			var $select = $('#items select[name=itemBucket]');
+			var $select = $('#items input[name=itemBucket]');
 			$select.html(bucketOptions);
 
 			function sortAlpha(a,b){  
@@ -679,9 +665,6 @@ UI.prototype = {
 			$select.children('option').sort(sortAlpha).appendTo($select);  
 
 			$('#items').show();
-
-			that.itemLiveBinds();
-			that.itemBinds();
 		},true);
 	},
 	itemLiveBinds: function() {
@@ -727,8 +710,8 @@ UI.prototype = {
 			item.bucketId = $(this).closest('.itembucketContainer').children('select').val();
 			that.storage.setItem(item.itemId,item,function(){
 				setTimeout(function(){
-					that.drawItems(function(){},true);
-				},1000);
+					that.drawItems(function(){});
+				},0);
 			});
 		});
 		$('.itembucketContainer .cancel').live('click',function(){
@@ -741,47 +724,6 @@ UI.prototype = {
 			$container.html(bucket.name);
 		});
 
-		$('.itemAdd > a').live('click',function(){
-			$(this).hide();
-			$('.itemAddDialog').show();
-			$('.twipsy').remove();
-			$('.itemAddDialog input[name=itemName]').trigger('focus');
-		});
-		$('.itemAddDialog select, .itemAddDialog input').live('keypress',function(e){
-			if ( e.which === 13 ) {
-				$('.itemAddDialog .save.button').trigger('click');
-			}
-		});
-		$('.itemAddDialog .cancel.button').live('click',function(){
-			$('.itemAdd > a').show();
-			$('.itemAddDialog').hide();
-			$('.itemAddDialog input').val('');
-			$('.itemAddDialog textarea').val('');
-		});
-		$('.itemAddDialog .save.button').live('click',function(){
-			var $this = $(this),
-				name = $('.itemAddDialog input[name=itemName]').val();
-			if ( name.length ) {
-				$('.itemAdd > a').show();
-				$('.itemAddDialog').hide();
-				var newItem = {
-					name: name,
-					bucketId: $('.itemAddDialog select[name=itemBucket] option:selected').val(),
-					desc: $('.itemAddDialog textarea[name=itemDesc]').val(),
-					submitter: that.utils.currentMember(),
-					status: 2,
-					created: (new Date().getTime())
-				};
-				$this.html('Saving...').css('opacity',0.7);
-				that.storage.newItem(newItem,function(){
-					$('.itemAddDialog .cancel.button').trigger('click');
-					$this.html('Save').css('opacity',1);
-					that.drawItems(function(){});
-				});
-			} else {
-				alert('Name must not be empty!');
-			}
-		});
 		$('.escalate.button, .done.button').live('click',function(){
 			var $item = $(this).closest('.item'),
 				itemId = $item.attr('data-id'),
@@ -830,12 +772,70 @@ UI.prototype = {
 			}
 			$(this).closest('section').children('div, table').slideToggle();
 		});
+		
 	},
 	itemBindsUnbind: function() {
-		$('.itemAction .button.done, .itemAction .button.escalate, .itemAction .button.delay, .itemAction .button.deescalate, .editable-itemname, .editable-itemdesc').unbind();
+		$('.itemAction .button.done, .itemAction .button.escalate, .itemAction .button.delay, .itemAction .button.deescalate, .editable-itemname, .editable-itemdesc, .itemAddDialog input, .itemAddDialog .save.button').unbind();
+
+		$('.itemAddDialog .itemBucket').removeData('tokenInputObject');
+		$('#items').find('.token-input-list').remove();
 	},
 	itemBinds: function() {
 		var that = this;
+		$('.itemAddDialog input').keypress(function(e){
+			if ( e.which === 13 ) {
+				$('.itemAddDialog .save.button').trigger('click');
+			}
+		});
+		$('.itemAddDialog .save.button').click(function(){
+			var $this = $(this),
+				nameInput = $('.itemAddDialog input[name=itemName]'),
+				bucketId = $('.itemAddDialog input[name=itemBucket]').tokenInput("get")[0];
+			if ( nameInput.val().length && typeof bucketId !== 'undefined' ) {
+				localStorage['lastBucketId'] = bucketId;
+
+				bucketId = bucketId.id;
+				var newItem = {
+					name: nameInput.val(),
+					bucketId: bucketId,
+					desc: $('.itemAddDialog input[name=itemDesc]').val(),
+					submitter: that.utils.currentMember(),
+					status: 2,
+					created: (new Date().getTime())
+				};
+				$this.css('opacity',0.3);
+				that.storage.newItem(newItem,function(){
+					that.drawItems(function(){});
+					$this.css('opacity',1);
+					nameInput.val('');
+				});
+			} else {
+				alert('Name & Bucket must not be empty!');
+			}
+		});
+
+		if ( typeof $('.itemAddDialog .itemBucket').data('tokenInputObject') === 'undefined' ) {
+			var prePopulate = [];
+			if ( typeof localStorage['lastBucketId'] !== 'undefined' && localStorage['lastBucketId'] !== null ) {
+				var bucket = that.storage.getBucket(localStorage['lastBucketId']);
+				if ( typeof bucket !== 'undefined' ) {
+	 				prePopulate.push({
+						_id: bucket._id,
+						name: bucket.name
+					});
+				}
+			}
+			$('.itemAddDialog .itemBucket').tokenInput('/api/buckets',$.extend(this.tokenInputOptions,{
+				prePopulate: prePopulate,
+				preventDuplicates: true,
+				hintText: 'Start typing the name of the desired bucket',
+				tokenLimit: 1
+			}));
+
+			$('.itemAddDialog .token-input-list').click(function(e){
+				$('.itemAddDialog .itemBucket').tokenInput('clear');
+			});
+		}
 
 		//init tablesorter, but only if it hasn't been already, and has at least 2 data row
 		$('.tablesorter-simple').each(function(i){
@@ -843,8 +843,9 @@ UI.prototype = {
 				$(this).tablesorter({
 					sortList: [[2,1]],
 					headers: {
-						2:{sorter: 'timeago'},
-						3:{sorter: false}
+						//2:{sorter: 'timeago'},
+						//3:{sorter: false}
+						2:{sorter: false}
 					}
 				}); 
 			}
