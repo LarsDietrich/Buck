@@ -267,6 +267,12 @@ Storage.prototype = {
 		this.bucketsTime = -1;
 		this.membersTime = -1;
 	},
+	getQuery: function() {
+		return {
+			query:this.query,
+			member:this.member
+		};
+	},
 	reloadItems: function(cb) {
 		var that = this;
 		if (typeof(cb)==='function') {
@@ -455,12 +461,16 @@ UI.prototype = {
 			this.storage.reloadBuckets(function(){
 				that.beforeSwitch();
 				that.bucketsMode();
+				history.pushState(null,'Bucket List','/buckets');
 				cb();
 			});
 		} else if ( mode === 'items' ) {
 			this.storage.reloadItems(function(){
 				that.beforeSwitch();
 				that.itemsMode();
+				if ( typeof that.storage.getQuery().query === 'undefined' || that.storage.getQuery().query.length == 0 ) {
+					history.pushState(null,'Item List','/items');
+				}
 				cb();
 			});
 		} else if ( mode === 'login' ) {
@@ -491,6 +501,12 @@ UI.prototype = {
 
 	bucketsMode: function() {
 		var that = this;
+
+		this.storage.setQuery({
+			query: undefined,
+			member: undefined
+		});
+		
 		this.drawBuckets(function(){
 			$('#buckets').show();
 
@@ -639,9 +655,11 @@ UI.prototype = {
 	itemsMode: function() {
 		var that = this;
 		$('.search').val('');
-		this.storage.setQuery({
-			member: that.utils.currentMember()
-		});
+		if ( typeof this.storage.query === 'undefined' ) { 
+			this.storage.setQuery({
+				member: that.utils.currentMember()
+			});
+		}
 		this.drawItems(function(){
 			$('#items h1').each(function(e){
 				if ( $(this).hasClass('open') ) {
@@ -672,7 +690,19 @@ UI.prototype = {
 		var that = this,
 			searchTimeout;
 			console.log('itemLiveBinds');
+
+		$('.search').val(this.storage.getQuery().query);
 		$('.search').live('change keyup',function(){
+			clearTimeout(searchTimeout);
+			searchTimeout = setTimeout(function(){
+				var q = that.storage.getQuery().query;
+				if ( typeof q !== 'undefined' && q.length ) {
+					history.pushState(null,'Search for "'+q+'"','/?q='+q);
+				} else {
+					console.log('trolling');
+					history.pushState(null,'Item List','/items');
+				}
+			},500);
 			if ( $(this).val().length !== 0 ) {
 				var query = $(this).val();
 				if ( query.length === 1 ) { 
@@ -688,14 +718,14 @@ UI.prototype = {
 					}
 				},true);
 			} else {
-				document.location.reload(true);
+				//document.location.reload(true);
 
 				$('.items').removeClass('searchMode');
 				$('.itemsMenu').text('My Items');
 				that.storage.setQuery({
 					member: that.utils.currentMember()
 				});
-				$('#items-notyours > div').hide();
+				that.drawItems(function(){},true);
 			}
 		});
 		
@@ -1007,8 +1037,47 @@ Core.prototype = {
 		this.ui = {};
 		this.storage.reload(function(){
 			that.ui = new UI(that.storage,that.utils);
-			cb();
+			that.parseUrl(function(){cb()});
 		});
+	},
+	/*
+/items
+	  /:itemId <- display single item (?q=item_asdfg)
+/buckets
+	  /:bucketId <- display single bucket (?q=bucket_asdfg)
+/?q=:query
+*/
+	parseUrl: function(cb) {
+		var that = this,
+			path = document.location.pathname,
+			q = document.location.search;
+		if ( path.indexOf('/login') === -1 && $.cookie('buckUserId') === null || $.cookie('buckUserName') === null ) {
+			return document.location = '/login';
+		}
+		path = path.split('/').slice(1);
+		if ( path.length > 1 ) {
+			this.storage.setQuery({
+				query: path[1]
+			});
+		}
+
+		if ( path[0].indexOf('items') !== -1 ) {
+			this.ui.switchMode('items',function(){cb();});
+		} else if ( path[0].indexOf('buckets') !== -1 ) {
+			this.ui.switchMode('buckets',function(){cb();});
+		} else if ( q.indexOf('q=') !== -1 ) {
+			q = q.split('=')[1]; //?q=asdf -> asdf
+				
+			this.storage.setQuery({
+				query: q
+			});
+			this.ui.switchMode('items',function(){
+				cb();
+			});
+		} else {
+			cb();
+		}
+		
 	}
 }
 

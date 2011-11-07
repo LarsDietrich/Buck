@@ -1,7 +1,0 @@
-var url_variables = {
-	m: {
-		i: 'items view',
-		b: 'buckets view'
-	},
-	
-};

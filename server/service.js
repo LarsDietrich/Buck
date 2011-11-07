@@ -6,16 +6,6 @@ var journey = require('journey'),
 
 exports.createRouter = function(resources){
 	var router = new(journey.Router);
-	router.path('/',function(){
-		//GET /
-		this.get('/').bind(function(req,res,params){
-			fs.readFile('client/index.html','utf-8',function(err,data){
-				if (err){return res.send(500,{},{error:err});}
-				res.baseResponse.headers = {'Content-Type':'text/html'};
-				res.sendBody(data);
-			});
-		});
-	});
 	router.path('/f',function(){
 		//GET /f/adelle-:weight.:extension
 		this.get(/adelle(light|regular|bold).(eot|woff|ttf)/).bind(function(req,res,weight,extension,params){
@@ -297,6 +287,13 @@ exports.createRouter = function(resources){
 					res.send(200,{},{member:member});
 				});
 			});
+		});
+	});
+	router.any.bind(function(req,res,params){
+		fs.readFile('client/index.html','utf-8',function(err,data){
+			if (err){return res.send(500,{},{error:err});}
+			res.baseResponse.headers = {'Content-Type':'text/html'};
+			res.sendBody(data);
 		});
 	});
 	return router;

@@ -1,15 +1,5 @@
-var url_variables = {
-	m: {
-		i: 'items view',
-		b: 'buckets view'
-	},
-	q: {
-		assert: function(){
-			return (m.val() === 'i')
-		},
-		'purpose': 'fulltext query'
-	}
-	itemId: 'single item',
-	bucketId: 'single bucket',
-	debug: 'disable js/css compression'
-};
+/items
+	  /:itemId <- display single item (?q=item_asdfg)
+/buckets
+	  /:bucketId <- display single bucket (?q=bucket_asdfg)
+/?q=:query

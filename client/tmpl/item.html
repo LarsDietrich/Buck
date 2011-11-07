@@ -35,7 +35,7 @@ if (data.humanStatus!=="deleted"&&data.humanStatus!=="notyours"&&data.humanStatu
 	<div class="(@= metaClass @) itemMeta">
 		<h2 (@ if (editable){ @)class="editable-itemname" title="Click to edit title"(@ } @)>(@= data.name @)</h2>
 		<div class="desc">
-			<p><span class="(@ if (editable) { @)editable-itemdesc(@ } @) desctext" (@ if (editable){ @)title="Click to edit description"(@ } @)>(@= data.desc @)</span> // by <span class="meta">(@= data.submitter @)</span> in <span class="meta (@ if (editable) { @)itembucket(@ } @)" title="Click to move item to another bucket">(@= data.bucketName @)</span></p> 
+			<p><span class="(@ if (editable) { @)editable-itemdesc(@ } @) desctext" (@ if (editable){ @)title="Click to edit description"(@ } @)>(@= data.desc @)</span> // by <span class="meta">(@= data.submitter @)</span> in <span class="meta (@ if (editable) { @)itembucket(@ } @)" title="Click to move item to another bucket">(@= data.bucketName @)</span> // <span class="meta"><a href="/?q=(@= data._id @)">link</a></span></p> 
 		</div>
 	</div>
 	<div class="(@= actionClass @) itemAction">
