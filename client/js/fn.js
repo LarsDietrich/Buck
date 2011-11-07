@@ -665,11 +665,13 @@ UI.prototype = {
 			$select.children('option').sort(sortAlpha).appendTo($select);  
 
 			$('#items').show();
+			that.itemLiveBinds();
 		},true);
 	},
 	itemLiveBinds: function() {
 		var that = this,
 			searchTimeout;
+			console.log('itemLiveBinds');
 		$('.search').live('change keyup',function(){
 			if ( $(this).val().length !== 0 ) {
 				var query = $(this).val();
