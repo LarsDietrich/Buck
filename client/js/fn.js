@@ -506,7 +506,7 @@ UI.prototype = {
 			query: undefined,
 			member: undefined
 		});
-		
+
 		this.drawBuckets(function(){
 			$('#buckets').show();
 
@@ -688,10 +688,14 @@ UI.prototype = {
 	},
 	itemLiveBinds: function() {
 		var that = this,
-			searchTimeout;
-			console.log('itemLiveBinds');
+			searchTimeout,
+			query = '';
 
-		$('.search').val(this.storage.getQuery().query);
+
+		if ( typeof this.storage.getQuery().query !== 'undefined' && ( query = this.storage.getQuery().query ).length > 0 ) {
+			$('#items').addClass('searchMode');
+		}
+		$('.search').val(query);
 		$('.search').live('change keyup',function(){
 			clearTimeout(searchTimeout);
 			searchTimeout = setTimeout(function(){
@@ -699,7 +703,6 @@ UI.prototype = {
 				if ( typeof q !== 'undefined' && q.length ) {
 					history.pushState(null,'Search for "'+q+'"','/?q='+q);
 				} else {
-					console.log('trolling');
 					history.pushState(null,'Item List','/items');
 				}
 			},500);
@@ -712,7 +715,7 @@ UI.prototype = {
 				}
 				that.storage.setQuery({query:query});
 				that.drawItems(function(){
-					$('.items').addClass('searchMode');
+					$('#items').addClass('searchMode');
 					if ( $('#items-notyours > div').children().length ) {
 						$('#items-notyours > div').show();
 					}
@@ -725,7 +728,9 @@ UI.prototype = {
 				that.storage.setQuery({
 					member: that.utils.currentMember()
 				});
-				that.drawItems(function(){},true);
+				that.drawItems(function(){
+					$('#items').removeClass('searchMode');
+				},true);
 			}
 		});
 		
