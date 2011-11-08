@@ -60,8 +60,8 @@ exports.createRouter = function(resources){
 		this.get().bind(function(req,res,params){
 			fs.readFile('client/favicon.ico',function(err,data){
 				if (err){return res.send(500,{},{error:err});}
-				res.baseResponse.headers = {'Content-Type':'image/vnd.microsoft.icon'};
-				res.sendBody(data);
+			//	res.baseResponse.headers = {'Content-Type':'image/vnd.microsoft.icon'};
+				//res.sendBody('');
 			});
 		});
 	});
@@ -71,6 +71,7 @@ exports.createRouter = function(resources){
 			fs.readFile('client/js/fn.js','utf-8',function(err,data){
 				if (err){return res.send(500,{},{error:err});}
 				res.baseResponse.headers = {'Content-Type':'application/javascript'};
+
 				res.sendBody(data);
 			});
 		});

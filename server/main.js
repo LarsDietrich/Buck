@@ -4,7 +4,8 @@ var http = require('http'),
 	elasticSearchClient = require('./elasticsearch'),
 	rsc = require('./resources'),
 	common = require('./common'),
-	service = require('./service');
+	service = require('./service'),
+	fs = require('fs');
 
 exports.createServer = function(port,db,es){
 	var resources = rsc(db,es); 
@@ -19,13 +20,20 @@ exports.createServer = function(port,db,es){
 		});
 
 		req.on('end',function(){
-			var emitter = router.handle(req,body,function(route){
-				res.writeHead(route.status,route.headers);
-				res.end(route.body);
-			});
-			emitter.on('log',function(info) {
-				winston.info('Request completed', info);
-			});
+			if ( req.url === '/favicon.ico' ) {
+				fs.readFile('client/favicon.ico',function(err,data){
+					res.writeHead(200,{'Content-Type':'image/vnd.microsoft.icon'});
+					res.end(data);
+				});
+			} else {
+				var emitter = router.handle(req,body,function(route){
+					res.writeHead(route.status,route.headers);
+					res.end(route.body);
+				});
+				emitter.on('log',function(info) {
+					winston.info('Request completed', info);
+				});
+			}
 		});
 	});
 
