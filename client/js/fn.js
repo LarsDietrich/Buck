@@ -1056,42 +1056,52 @@ Core.prototype = {
 		var that = this,
 			path = document.location.pathname,
 			q = document.location.search;
-		if ( path.indexOf('/login') === -1 && $.cookie('buckUserId') === null || $.cookie('buckUserName') === null ) {
-			return document.location = '/login';
-		}
-		path = path.split('/').slice(1);
-		if ( path.length > 1 ) {
-			this.storage.setQuery({
-				query: path[1]
-			});
-		}
 
-		if ( path[0].indexOf('items') !== -1 ) {
-			this.ui.switchMode('items',function(){cb();});
-		} else if ( path[0].indexOf('buckets') !== -1 ) {
-			this.ui.switchMode('buckets',function(){cb();});
-		} else if ( q.indexOf('q=') !== -1 ) {
-			q = q.split('=')[1]; //?q=asdf -> asdf
-				
-			this.storage.setQuery({
-				query: q
-			});
-			this.ui.switchMode('items',function(){
+//if NOT login and NO cookies
+	//go to login
+//if login and NO cookies
+	//do nothing
+//if NOT login and cookies
+	//do stuff
+
+
+		if ( $.cookie('buckUserId') === null || $.cookie('buckUserName') === null ) {
+			if ( path.indexOf('/login') === -1 ) {
+				return document.location = '/login';
+			} else {
 				cb();
-			});
+			}
 		} else {
-			cb();
+			path = path.split('/').slice(1);
+			if ( path.length > 1 ) {
+				this.storage.setQuery({
+					query: path[1]
+				});
+			}
+
+			if ( path[0].indexOf('items') !== -1 ) {
+				this.ui.switchMode('items',function(){cb();});
+			} else if ( path[0].indexOf('buckets') !== -1 ) {
+				this.ui.switchMode('buckets',function(){cb();});
+			} else if ( q.indexOf('q=') !== -1 ) {
+				q = q.split('=')[1]; //?q=asdf -> asdf
+					
+				this.storage.setQuery({
+					query: q
+				});
+				this.ui.switchMode('items',function(){
+					cb();
+				});
+			} else {
+				cb();
+			}
 		}
-		
 	}
 }
 
 $(function(){
 	var defaultMode = 'items';
 	if ( document.location.pathname.indexOf('/login') === -1 ) {
-		if ( $.cookie('buckUserId') === null || $.cookie('buckUserName') === null ) {
-			document.location = '/login';
-		}
 		$('#logoutLink').html($('#logoutLink').html()+" "+$.cookie('buckUserId'));
 		$('#logoutLink').click(function(e){
 			$.cookie('buckUserId',null);
