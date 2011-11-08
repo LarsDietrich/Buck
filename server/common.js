@@ -1,6 +1,6 @@
 Common = {
 	esIndex: 'buck',
 	esMax: 50000,
-	compressJS: true
+	domain: 'tradeshift.com'
 }
 module.exports = Common;

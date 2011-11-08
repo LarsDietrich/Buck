@@ -1,0 +1,68 @@
+(@ 
+var fieldNames = ["Name","Description","Status",     "Bucket"];
+var fields = 	 ["name","desc",       "humanStatus","bucketName"];
+@)<html>
+	<body leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" bgcolor="#ffffff" >
+		<style>
+			img {display:block;}
+			a { color: #20a0e9; }
+			body,p,li,img { font-family: arial; font-size: 16px; line-height: 24px; color: #333333; }
+		</style>
+		<table width="100%" cellpadding="10" cellspacing="0" bgcolor="#ffffff" >
+			<tr>
+				<td valign="top" align="center">
+					<table width="550" cellpadding="0" cellspacing="0">
+						<tr>
+							<td width="550">
+								<div style="line-height:20px;color:#000000;text-align:center;">
+									<span style="font-family:arial;font-size:16px;line-height:24px;font-weight:normal;text-align:center;">(@= data.memberName @) created</span><br/>
+								</div>
+								<div style="line-height:20px;color:#000000;text-align:center;">
+									<a href="(@= data.baseUrl @)/?q=(@= data.item._id @)"><span style="font-family:arial;font-size:18px;line-height:22px;font-weight:bold;text-align:center;"><b>"(@= data.item.name @)"</b></span></a><br/>
+								</div>
+								<div style="line-height:20px;color:#000000;text-align:center;">
+									<span style="font-family:arial;font-size:16px;line-height:24px;font-weight:normal;text-align:center;">in (@= data.item.bucketName @)</span><br/>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td width="550" height="20"></td>
+						</tr>
+						<tr>
+							<td width="550" style="padding:0px;">
+								<table width="550" cellpadding="0" cellspacing="0">
+								(@ fields.forEach(function(field,i){ @)
+									<tr>
+										<td width="40"></td>
+										<td width="157" valign="top">
+											<p>(@= fieldNames[i] @):</p>
+										</td>
+										<td width="313" valign="top">
+											(@ if ( field === "bucketName" ) { @)<a href="(@= data.baseUrl @)/?q=(@= data.item.bucketId @)">(@ } @)
+												<p>(@= (data.item[field])?(data.item[field]):("- empty -") @)</p>
+											(@ if ( field === "bucketName" ) { @)</a>(@ } @)
+										</td>
+										<td width="40"></td>
+									</tr>
+								(@ }); @)
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td width="550" height="40">&nbsp;</td>
+						</tr>
+						<tr>
+							<td align="center" style="font-family:arial;font-size:10px;color:#aaaaaa;line-height:14px;">
+								This message was brought to you by Buck!
+							</td>
+						</tr>
+						<tr>
+							<td width="550" height="20">&nbsp;</td>
+						</tr>
+					<table>
+				</td>
+			</tr>
+
+		</table>
+	</body>
+</html>

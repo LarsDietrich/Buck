@@ -1,5 +1,6 @@
 var http = require('http'),
 	winston = require('winston'),
+	helpers = require('./helpers'),
 	database = require('./database'),
 	elasticSearchClient = require('./elasticsearch'),
 	rsc = require('./resources'),

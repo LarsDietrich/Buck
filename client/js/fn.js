@@ -1046,25 +1046,16 @@ Core.prototype = {
 		});
 	},
 	/*
-/items
-	  /:itemId <- display single item (?q=item_asdfg)
-/buckets
-	  /:bucketId <- display single bucket (?q=bucket_asdfg)
-/?q=:query
-*/
+	/items
+		  /:itemId <- display single item (?q=item_asdfg)
+	/buckets
+		  /:bucketId <- display single bucket (?q=bucket_asdfg)
+	/?q=:query
+	*/
 	parseUrl: function(cb) {
 		var that = this,
 			path = document.location.pathname,
 			q = document.location.search;
-
-//if NOT login and NO cookies
-	//go to login
-//if login and NO cookies
-	//do nothing
-//if NOT login and cookies
-	//do stuff
-
-
 		if ( $.cookie('buckUserId') === null || $.cookie('buckUserName') === null ) {
 			if ( path.indexOf('/login') === -1 ) {
 				return document.location = '/login';
