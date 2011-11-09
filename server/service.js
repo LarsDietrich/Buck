@@ -61,7 +61,7 @@ exports.createRouter = function(resources){
 					});
 				});
 			});
-			this.path('/fn.js',function(){
+			this.path(/\/(Storage|Utils|Client|Core).js/,function(){
 				//GET /fn.js
 				this.get().bind(function(req,res,params){
 					fs.readFile('client/js/fn.js','utf-8',function(err,data){
@@ -72,36 +72,36 @@ exports.createRouter = function(resources){
 					});
 				});
 			});
-			this.path('/login.js',function(){
-				//GET /login.js
-				this.get().bind(function(req,res,params){
-					fs.readFile('client/js/login.js','utf-8',function(err,data){
-						if (err){return res.send(500,{},{error:err});}
-						res.baseResponse.headers = {'Content-Type':'application/javascript'};
-						res.sendBody(data);
-					});
-				});
-			});
-			this.path('/jq.js',function(){
-				//GET /jq.js
-				this.get().bind(function(req,res,params){
-					fs.readFile('client/js/jq.js','utf-8',function(err,data){
-						if (err){return res.send(500,{},{error:err});}
-						res.baseResponse.headers = {'Content-Type':'application/javascript'};
-						res.sendBody(data);
-					});
-				});
-			});
-			this.path('/plug.js',function(){
-				//GET /plug.js
-				this.get().bind(function(req,res,params){
-					fs.readFile('client/js/plug.js','utf-8',function(err,data){
-						if (err){return res.send(500,{},{error:err});}
-						res.baseResponse.headers = {'Content-Type':'application/javascript'};
-						res.sendBody(data);
-					});
-				});
-			});
+			// this.path('/login.js',function(){
+			// 	//GET /login.js
+			// 	this.get().bind(function(req,res,params){
+			// 		fs.readFile('client/js/login.js','utf-8',function(err,data){
+			// 			if (err){return res.send(500,{},{error:err});}
+			// 			res.baseResponse.headers = {'Content-Type':'application/javascript'};
+			// 			res.sendBody(data);
+			// 		});
+			// 	});
+			// });
+			// this.path('/jq.js',function(){
+			// 	//GET /jq.js
+			// 	this.get().bind(function(req,res,params){
+			// 		fs.readFile('client/js/jq.js','utf-8',function(err,data){
+			// 			if (err){return res.send(500,{},{error:err});}
+			// 			res.baseResponse.headers = {'Content-Type':'application/javascript'};
+			// 			res.sendBody(data);
+			// 		});
+			// 	});
+			// });
+			// this.path('/plug.js',function(){
+			// 	//GET /plug.js
+			// 	this.get().bind(function(req,res,params){
+			// 		fs.readFile('client/js/plug.js','utf-8',function(err,data){
+			// 			if (err){return res.send(500,{},{error:err});}
+			// 			res.baseResponse.headers = {'Content-Type':'application/javascript'};
+			// 			res.sendBody(data);
+			// 		});
+			// 	});
+			// });
 			this.path('/api',function(){
 				this.path('/joke',function(){
 					this.get().bind(function(req,res,name,params){
@@ -329,15 +329,16 @@ exports.createRouter = function(resources){
 					});
 				});
 			});
-			this.any.bind(function(req,res,params){
-				fs.readFile('client/index.html','utf-8',function(err,data){
-					if (err){return res.send(500,{},{error:err});}
-					res.baseResponse.headers = {'Content-Type':'text/html'};
-					res.sendBody(data);
+			this.path('/',function(){
+				//this.get(/(items|buckets|\?.*|#.*)/).bind(function(req,res,params){
+				this.any.bind(function(req,res,params){
+					fs.readFile('client/index.html','utf-8',function(err,data){
+						if (err){return res.send(500,{},{error:err});}
+						res.baseResponse.headers = {'Content-Type':'text/html'};
+						res.sendBody(data);
+					});
 				});
 			});
-			
-			
 		});
 	});
 	return router;
