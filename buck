@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var sys = require('sys'),
+var sys = require('util'),
 	path = require('path'),
 	argv = require('optimist').argv;
 
