@@ -4,6 +4,7 @@ var journey = require('journey'),
 	fs = require('fs'),
 	common = require('./common'),
 	helpers = require('./helpers'),
+	style = require('../client/style.js'),
 	email = require('./email'),
 	userEmail = '',
 	userName = '',
@@ -21,31 +22,12 @@ exports.createRouter = function(resources){
 
 	router.map(function(){
 		this.filter(function(){
-			this.path('/tmpl',function(){
-				this.get(/([a-zA-Z0-9_-]+)\.html/).bind(function(req,res,template,params){
-					fs.readFile('client/tmpl/'+template+'.html','utf-8',function(err,data){
-						if (err){return res.send(500,{},{error:err});}
-						res.baseResponse.headers = {'Content-Type':'text/html'};
-						res.sendBody(data);
-					});
-				}); 
-			});
-			this.path('/login',function(){
-				//GET /login
+			this.path('/style.css',function(){
+				//GET /style.css
 				this.get().bind(function(req,res,params){
-					fs.readFile('client/login.html','utf-8',function(err,data){
+					style.getCss(function(err,data){
 						if (err){return res.send(500,{},{error:err});}
-						res.baseResponse.headers = {'Content-Type':'text/html'};
-						res.sendBody(data);
-					});
-				});
-			});
-			this.path('/fibonacci',function(){
-				//GET /login
-				this.get().bind(function(req,res,params){
-					fs.readFile('client/fibonacci.html','utf-8',function(err,data){
-						if (err){return res.send(500,{},{error:err});}
-						res.baseResponse.headers = {'Content-Type':'text/html'};
+						res.baseResponse.headers = {'Content-Type':'text/css'};
 						res.sendBody(data);
 					});
 				});

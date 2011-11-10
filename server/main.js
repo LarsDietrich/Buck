@@ -1,5 +1,6 @@
 var http = require('http'),
 	winston = require('winston'),
+	static = require('node-static'),
 	helpers = require('./helpers'),
 	database = require('./database'),
 	elasticSearchClient = require('./elasticsearch'),
@@ -10,9 +11,10 @@ var http = require('http'),
 	fs = require('fs');
 
 exports.createServer = function(port,db,es){
-	var resources = rsc(db,es); 
-	var router = service.createRouter(resources);
-	var httpServer = http.createServer(function(req,res){
+	var resources = rsc(db,es),
+		router = service.createRouter(resources),
+		files = new (static.Server)('./client', { cache: 3600 }),
+		httpServer = http.createServer(function(req,res){
 		var body = '';
 
 		winston.info('Incoming Request',{url:req.url});
@@ -22,40 +24,27 @@ exports.createServer = function(port,db,es){
 		});
 		
 		req.on('end',function(){
-			if ( req.url === '/favicon.ico' ) {
-				fs.readFile('client/favicon.ico',function(err,data){
-					res.writeHead(200,{'Content-Type':'image/vnd.microsoft.icon'});
-					res.end(data);
-				});
-			} else if ( /\/(storage|utils|client|ui|core|plug|jq|fn).js/.test(req.url) ) {
-				fs.readFile('client/js'+req.url,'utf-8',function(err,data){
-					res.writeHead(200,{'Content-Type':'application/javascript'});
-					res.end(data);
-				});
-
-			} else if ( req.url === '/style.css' ) {
-				style.getCss(function(err,data){
-					if (err){
-						res.writeHead(500,{});
-						res.end(JSON.stringify({error:err}));
-					}
-					res.writeHead(200,{'Content-Type':'text/css'});
-					res.end(data);
-				});
-			} else if ( req.url.indexOf('/api') === -1 || req.url === '/' || /\/((\?q=)|\/items|\/buckets)(.*)/.test(req.url) ) {
-				fs.readFile('client/index.html','utf-8',function(err,data){
-					res.writeHead(200,{'Content-Type':'text/html'});
-					res.end(data);
-				});
-			} else {
-				var emitter = router.handle(req,body,function(route){
-					res.writeHead(route.status,route.headers);
-					res.end(route.body);
-				});
-				emitter.on('log',function(info) {
-					winston.info('Request completed', info);
-				});
+			if ( req.url.indexOf('/items') === 0 || req.url.indexOf('/buckets') === 0 ) {
+				req.url = '/';
+			} else if ( req.url.indexOf('/login') === 0 ) {
+				req.url = '/login.html';
 			}
+			var emitter = router.handle(req,body,function(route){
+				if ( route.status === 404 ) {
+					files.serve(req,res,function(err,result){
+						if (err && (err.status===404)) {
+							res.writeHead(404);
+							res.end('File not found.');
+						}
+					});
+					return;
+				}
+				res.writeHead(route.status,route.headers);
+				res.end(route.body);
+			});
+			emitter.on('log',function(info) {
+				winston.info('Request completed', info);
+			});
 		});
 	});
 
