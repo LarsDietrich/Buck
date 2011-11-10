@@ -4,7 +4,6 @@ var journey = require('journey'),
 	fs = require('fs'),
 	common = require('./common'),
 	helpers = require('./helpers'),
-	style = require('../client/style.js'),
 	email = require('./email'),
 	userEmail = '',
 	userName = '',
@@ -51,57 +50,6 @@ exports.createRouter = function(resources){
 					});
 				});
 			});
-			this.path('/style.css',function(){
-				//GET /style.css
-				this.get().bind(function(req,res,params){
-					style.getCss(function(err,data){
-						if (err){return res.send(500,{},{error:err});}
-						res.baseResponse.headers = {'Content-Type':'text/css'};
-						res.sendBody(data);
-					});
-				});
-			});
-			this.path(/\/(Storage|Utils|Client|Core).js/,function(){
-				//GET /fn.js
-				this.get().bind(function(req,res,params){
-					fs.readFile('client/js/fn.js','utf-8',function(err,data){
-						if (err){return res.send(500,{},{error:err});}
-						res.baseResponse.headers = {'Content-Type':'application/javascript'};
-
-						res.sendBody(data);
-					});
-				});
-			});
-			// this.path('/login.js',function(){
-			// 	//GET /login.js
-			// 	this.get().bind(function(req,res,params){
-			// 		fs.readFile('client/js/login.js','utf-8',function(err,data){
-			// 			if (err){return res.send(500,{},{error:err});}
-			// 			res.baseResponse.headers = {'Content-Type':'application/javascript'};
-			// 			res.sendBody(data);
-			// 		});
-			// 	});
-			// });
-			// this.path('/jq.js',function(){
-			// 	//GET /jq.js
-			// 	this.get().bind(function(req,res,params){
-			// 		fs.readFile('client/js/jq.js','utf-8',function(err,data){
-			// 			if (err){return res.send(500,{},{error:err});}
-			// 			res.baseResponse.headers = {'Content-Type':'application/javascript'};
-			// 			res.sendBody(data);
-			// 		});
-			// 	});
-			// });
-			// this.path('/plug.js',function(){
-			// 	//GET /plug.js
-			// 	this.get().bind(function(req,res,params){
-			// 		fs.readFile('client/js/plug.js','utf-8',function(err,data){
-			// 			if (err){return res.send(500,{},{error:err});}
-			// 			res.baseResponse.headers = {'Content-Type':'application/javascript'};
-			// 			res.sendBody(data);
-			// 		});
-			// 	});
-			// });
 			this.path('/api',function(){
 				this.path('/joke',function(){
 					this.get().bind(function(req,res,name,params){

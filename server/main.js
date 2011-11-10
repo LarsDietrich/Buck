@@ -6,6 +6,7 @@ var http = require('http'),
 	rsc = require('./resources'),
 	common = require('./common'),
 	service = require('./service'),
+	style = require('../client/style.js'),
 	fs = require('fs');
 
 exports.createServer = function(port,db,es){
@@ -19,7 +20,7 @@ exports.createServer = function(port,db,es){
 		req.on('data',function(chunk){
 			body += chunk;
 		});
-
+		
 		req.on('end',function(){
 			if ( req.url === '/favicon.ico' ) {
 				fs.readFile('client/favicon.ico',function(err,data){
@@ -31,7 +32,17 @@ exports.createServer = function(port,db,es){
 					res.writeHead(200,{'Content-Type':'application/javascript'});
 					res.end(data);
 				});
-			} else if ( req.url.indexOf('/api') === -1 || req.url === '/' || /(\/(\?q=)|\/items|\/buckets)(.*)/.test(req.url) ) {
+
+			} else if ( req.url === '/style.css' ) {
+				style.getCss(function(err,data){
+					if (err){
+						res.writeHead(500,{});
+						res.end(JSON.stringify({error:err}));
+					}
+					res.writeHead(200,{'Content-Type':'text/css'});
+					res.end(data);
+				});
+			} else if ( req.url.indexOf('/api') === -1 || req.url === '/' || /\/((\?q=)|\/items|\/buckets)(.*)/.test(req.url) ) {
 				fs.readFile('client/index.html','utf-8',function(err,data){
 					res.writeHead(200,{'Content-Type':'text/html'});
 					res.end(data);
