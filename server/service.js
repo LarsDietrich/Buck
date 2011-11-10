@@ -251,17 +251,19 @@ exports.createRouter = function(resources){
 									if ( ownBucket === false ) { //this means we need to send a notification to everybody in that bucket
 										resources.bucket.show(item.bucketId,function(err,bucket){ //get item's bucket
 											if (err){return res.send(500,{},{error:err});}
-											item.bucketName = bucket.name; //this is needed for the email template
-											email.sendMail({
-												template: 'email_created',
-												to: bucket.memberHandles.join('@'+common.domain+', ')+'@'+common.domain, //join doesn't apply to the last elem
-												data: {
-													item: item,
-													memberName: userName
-												}
-											},function(err,sent) {
-												console.log('Message ' + (sent ? 'sent' : 'failed'));
-											});
+											if ( typeof item !== 'undefined' ) {
+												item.bucketName = bucket.name; //this is needed for the email template
+												email.sendMail({
+													template: 'email_created',
+													to: bucket.memberHandles.join('@'+common.domain+', ')+'@'+common.domain, //join doesn't apply to the last elem
+													data: {
+														item: item,
+														memberName: userName
+													}
+												},function(err,sent) {
+													console.log('Message ' + (sent ? 'sent' : 'failed'));
+												});
+											}
 										});
 									}
 								}
@@ -277,25 +279,27 @@ exports.createRouter = function(resources){
 							resources.item.update(itemId,item,function(err,updated){
 								if (err){return res.send(500,{},{error:updated});}
 
-								//   not my own						  and status has changed				 
-								if ( userHandle !== item.submitter && item.status !== originalItem.status ) {
-									if ( item.status >= 3 ) { //and is at least accepted
-										var template = 'email_modified';
-									} else if ( item.status === 0 ) { //or deleted
-										var template = 'email_deleted';
-									}
-									if ( typeof template !== 'undefined' ) {
-										email.sendMail({
-											template: template,
-											to: item.submitter+'@'+common.domain,
-											data: {
-												item: item,
-												originalItem: originalItem,
-												memberName: userName
-											}
-										},function(err,sent) {
-											console.log('Message ' + (sent ? 'sent' : 'failed'));
-										});
+								if ( typeof item !== 'undefined' ) {
+									//   not my own						  and status has changed				 
+									if ( userHandle !== item.submitter && item.status !== originalItem.status ) {
+										if ( item.status >= 3 ) { //and is at least accepted
+											var template = 'email_modified';
+										} else if ( item.status === 0 ) { //or deleted
+											var template = 'email_deleted';
+										}
+										if ( typeof template !== 'undefined' ) {
+											email.sendMail({
+												template: template,
+												to: item.submitter+'@'+common.domain,
+												data: {
+													item: item,
+													originalItem: originalItem,
+													memberName: userName
+												}
+											},function(err,sent) {
+												console.log('Message ' + (sent ? 'sent' : 'failed'));
+											});
+										}
 									}
 								}
 
