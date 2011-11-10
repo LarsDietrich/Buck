@@ -31,7 +31,7 @@ exports.createServer = function(port,db,es){
 					res.writeHead(200,{'Content-Type':'application/javascript'});
 					res.end(data);
 				});
-			} else if ( req.url === '/' || /(\/(\?q=)|\/items|\/buckets)(.*)/.test(req.url) ) {
+			} else if ( req.url.indexOf('/api') === -1 || req.url === '/' || /(\/(\?q=)|\/items|\/buckets)(.*)/.test(req.url) ) {
 				fs.readFile('client/index.html','utf-8',function(err,data){
 					res.writeHead(200,{'Content-Type':'text/html'});
 					res.end(data);
