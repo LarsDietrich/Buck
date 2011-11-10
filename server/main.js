@@ -26,7 +26,7 @@ exports.createServer = function(port,db,es){
 					res.writeHead(200,{'Content-Type':'image/vnd.microsoft.icon'});
 					res.end(data);
 				});
-			} else if ( /\/(Storage|Utils|Client|Ui|Core|plug|jq|fn).js/.test(req.url) ) {
+			} else if ( /\/(storage|utils|client|ui|core|plug|jq|fn).js/.test(req.url) ) {
 				fs.readFile('client/js'+req.url,'utf-8',function(err,data){
 					res.writeHead(200,{'Content-Type':'application/javascript'});
 					res.end(data);
