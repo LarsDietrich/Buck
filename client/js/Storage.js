@@ -17,10 +17,10 @@ Storage.prototype = {
 	},
 	reload: function(cb) {
 		this.doneCb = cb;
-		this.parallelCalls = 3;
+		this.parallelCalls = 2;
 
 		this.ctr = 0;
-		this.reloadItems();
+		//this.reloadItems();
 		this.reloadMembers();
 		this.reloadBuckets();
 	},

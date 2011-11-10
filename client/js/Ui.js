@@ -3,6 +3,8 @@ function UI(storage,utils) {
 }
 UI.prototype = {
 	init: function(storage,utils) {
+		this.currentMode = '';
+
 		this.utils = utils;
 		this.storage = storage;
 
@@ -61,27 +63,30 @@ UI.prototype = {
 	},
 	switchMode: function(mode,cb) {
 		var that = this;
-		if ( mode === 'buckets' ) {
-			this.storage.reloadBuckets(function(){
-				that.beforeSwitch();
-				that.bucketsMode();
-				history.pushState(null,'Bucket List','/buckets');
-				cb();
-			});
-		} else if ( mode === 'items' ) {
-			this.storage.reloadItems(function(){
-				that.beforeSwitch();
-				that.itemsMode();
-				if ( typeof that.storage.getQuery().query === 'undefined' || that.storage.getQuery().query.length == 0 ) {
-					history.pushState(null,'Item List','/items');
-				}
-				cb();
-			});
-		} else if ( mode === 'login' ) {
-			this.storage.reloadMembers(function(){
-				that.loginMode();
-				cb();
-			});
+		if ( this.currentMode !== mode ) {
+			this.currentMode = mode;
+			if ( mode === 'buckets' ) {
+				this.storage.reloadBuckets(function(){
+					that.beforeSwitch();
+					that.bucketsMode();
+					history.pushState(null,'Bucket List','/buckets');
+					cb();
+				});
+			} else if ( mode === 'items' ) {
+			//	this.storage.reloadItems(function(){
+					that.beforeSwitch();
+					that.itemsMode();
+					if ( typeof that.storage.getQuery().query === 'undefined' || that.storage.getQuery().query.length == 0 ) {
+						history.pushState(null,'Item List','/items');
+					}
+					cb();
+			//	});
+			} else if ( mode === 'login' ) {
+				this.storage.reloadMembers(function(){
+					that.loginMode();
+					cb();
+				});
+			}
 		}
 	},
 	loginMode: function() {
