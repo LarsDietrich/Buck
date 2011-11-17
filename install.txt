@@ -45,5 +45,7 @@ php -f ./setup/buck_setup.php
 #run buck
 ./buck
 
+bau
+
 
 
