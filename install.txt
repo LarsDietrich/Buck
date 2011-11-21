@@ -24,6 +24,7 @@ npm install elasticsearchclient #elastic search client
 npm install cradle #couchdb wrapper
 npm install less #css less
 
+# or in a one-liner: npm install winston optimist journey elasticsearchclient cradle less
 
 #install couchdb 0.11.0
 # http://wiki.apache.org/couchdb/Installation
@@ -38,6 +39,21 @@ npm install less #css less
 
 #run elasticsearch like this
 /path/to/elasticsearch/bin/elasticsearch -f -Des.network.host=127.0.0.1 -Des.discovery.zen.ping.multicast.address=127.0.0.1
+
+# PRE-INSTALLATION: Things to do before running the initialization
+#
+# 1. create the secret.js file in the server (server/secret.js) directory with the content (with your own info ;-):
+# var mail = 'tofix@buck.js',
+#     baseUrl = 'buck.js';
+#	
+# exports.mail = mail;
+# exports.baseUrl = baseUrl;
+
+# 2. create the secret.php file for the setup (setup/secret.php) like this:
+# <?php
+# $email = 'some@domain.com';
+# $password = 'secret';
+# $domain = "domain.com";
 
 #initialize database/elasticsearch
 php -f ./setup/buck_setup.php
