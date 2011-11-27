@@ -343,11 +343,24 @@ UI.prototype = {
 			}
 		});
 		
-		$('.itembucket').live('click',function(){
+		$('.itembucket').live('click',function(e){
+			console.log(e);
 			var item = that.storage.getItem($(this).closest('.item').attr('data-id'));
-			$(this).html('<select>'+$('.itemAddDialog select').html()+'</select>'+$.inlineEdit.defaults.buttons);
-			$(this).children('select').val(item.bucketId);
-			$(this).removeClass('itembucket').addClass('itembucketContainer');
+
+			var bucketOptions = '';
+			$.each(that.storage.buckets,function(bucketId,bucket){
+				bucketOptions += '<option value="'+bucketId+'" data-name="'+bucket.name+'">'+bucket.name+'</option>';
+			}); 
+			$(this).append('<select></select>');
+			var $select = $(this).children('select');
+			console.log($select);
+			$select.html(bucketOptions);
+
+			function sortAlpha(a,b){  
+				return a.innerHTML > b.innerHTML ? 1 : -1;  
+			};  
+
+			$select.children('option').sort(sortAlpha).appendTo($select).val(item.bucketId).removeClass('itembucket').addClass('itembucketContainer');
 		});
 		$('.itembucketContainer .save').live('change click',function(){
 			var $item = $(this).closest('.item'),
@@ -436,9 +449,10 @@ UI.prototype = {
 		$('.itemAddDialog .save.button').click(function(){
 			var $this = $(this),
 				nameInput = $('.itemAddDialog input[name=itemName]'),
+				descInput = $('.itemAddDialog input[name=itemDesc]'),
 				bucketId = $('.itemAddDialog input[name=itemBucket]').tokenInput("get")[0];
 			if ( nameInput.val().length && typeof bucketId !== 'undefined' ) {
-				localStorage['lastBucketId'] = bucketId;
+				localStorage['lastBucketId'] = bucketId.id;
 
 				bucketId = bucketId.id;
 				var newItem = {
@@ -454,6 +468,7 @@ UI.prototype = {
 					that.drawItems(function(){});
 					$this.css('opacity',1);
 					nameInput.val('');
+					descInput.val('');
 				});
 			} else {
 				alert('Name & Bucket must not be empty!');
