@@ -8,7 +8,8 @@ var http = require('http'),
 	common = require('./common'),
 	service = require('./service'),
 	style = require('../client/style.js'),
-	fs = require('fs');
+	fs = require('fs'),
+	logger = require('./logger');
 
 exports.createServer = function(port,db,es){
 	var resources = rsc(db,es),
@@ -17,7 +18,7 @@ exports.createServer = function(port,db,es){
 		httpServer = http.createServer(function(req,res){
 		var body = '';
 
-		winston.info('Incoming Request',{url:req.url});
+		logger.w.info('Incoming Request',{url:req.url});
 		
 		req.on('data',function(chunk){
 			body += chunk;
@@ -43,7 +44,7 @@ exports.createServer = function(port,db,es){
 				res.end(route.body);
 			});
 			emitter.on('log',function(info) {
-				winston.info('Request completed', info);
+				logger.w.info('Request completed', info);
 			});
 		});
 	});
@@ -56,8 +57,6 @@ exports.createServer = function(port,db,es){
 };
 
 exports.start = function (options, cb) {
-	winston.add(winston.transports.File, { filename: options.logFile });
-	//winston.remove(winston.transports.Console);
 	var db = database.setup(options,function(err,db){
 		if (err) {
 			return cb(err);

@@ -25,12 +25,22 @@ var options = {
 	logFile: argv.l || '/var/log/buck.log'
 };
 
+// @todo: this is not cool
+global.logFile = options.logFile;
+
 var buck = require('./server/main');
 
 buck.start(options,function(err,server){
+	var logger = require('./server/logger');
+
+	process.on('uncaughtException', function(err) {
+		logger.w.info('Uncaught exception');
+		logger.w.info(err);
+	});
+
 	if (err){
-		return sys.puts('Error starting Buck '+ err.message);
+		return logger.w.info('Error starting Buck '+ err.message);
 	}
 
-	sys.puts('Buck ready to leak @ http://127.0.0.1:'+options.port);
+	logger.w.info('Buck ready to leak @ http://127.0.0.1:'+options.port);
 });
