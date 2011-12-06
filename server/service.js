@@ -109,27 +109,27 @@ exports.createRouter = function(resources){
 					//GET /items
 					this.get().bind(function(req,res,params){
 						if ( typeof(params.m) !== 'undefined' ) {
-							logger.w.info('getting buckets/items for member: '+params.m );
+							//logger.w.info('getting buckets/items for member: '+params.m );
 							resources.bucket.list(function(err,buckets){
 								if (err){return res.send(500,{},{error:err});}
-								logger.w.info('buckets='+JSON.stringify(buckets));
+								//logger.w.info('buckets='+JSON.stringify(buckets));
 								if ( typeof(buckets) !== 'undefined' ) {
-									logger.w.info('got '+buckets.length+' buckets:');
+									//logger.w.info('got '+buckets.length+' buckets:');
 									var ctr = buckets.length;
 									var _items = [];
 									buckets.forEach(function(bucket,i){
 										resources.item.list(function(err,items){
 											if (err){return res.send(500,{},{error:err});}
-											logger.w.info('items = '+JSON.stringify(items));
+											//logger.w.info('items = '+JSON.stringify(items));
 											if (typeof items !== 'undefined') {
-												logger.w.info('getting items for bucket: '+bucket.name);
-												logger.w.info('got '+items.length+' items');
+												//logger.w.info('getting items for bucket: '+bucket.name);
+												//logger.w.info('got '+items.length+' items');
 												_items = _items.concat(items);
 											}
 											ctr -= 1;
-											logger.w.info('ctr is '+ctr);
+											//logger.w.info('ctr is '+ctr);
 											if ( ctr === 0 ) {
-												logger.w.info('sending data back');
+												//logger.w.info('sending data back');
 												res.send(200,{},_items);
 											}
 										},{b:bucket.bucketId});
@@ -152,7 +152,7 @@ exports.createRouter = function(resources){
 					});
 					//GET /items/q/:query
 					this.get(/q\/(.*)/).bind(function(req,res,query,params){
-						logger.w.info(query);
+						// logger.w.info(query);
 						resources.item.list(function(err,items){
 							if (err){return res.send(500,{},{error:err});}
 							res.send(200,{},items);

@@ -34,8 +34,17 @@ buck.start(options,function(err,server){
 	var logger = require('./server/logger');
 
 	process.on('uncaughtException', function(err) {
-		logger.w.info('Uncaught exception');
-		logger.w.info(err);
+		logger.w.info(' ');
+		logger.w.info(' ');
+		logger.w.info(' ');
+		logger.w.info('-============================================================-');
+		logger.w.info('Caught exception: ' + err);
+		logger.w.info('Memory usage: ' + sys.inspect(process.memoryUsage()));
+		logger.w.info('Uptime: ' + process.uptime() + 's');
+		logger.w.info('-============================================================-');
+		logger.w.info(' ');
+		logger.w.info(' ');
+		logger.w.info(' ');
 	});
 
 	if (err){
