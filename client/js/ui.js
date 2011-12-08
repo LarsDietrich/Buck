@@ -344,43 +344,40 @@ UI.prototype = {
 		});
 		
 		$('.itembucket').live('click',function(e){
-			console.log(e);
 			var item = that.storage.getItem($(this).closest('.item').attr('data-id'));
 
 			var bucketOptions = '';
 			$.each(that.storage.buckets,function(bucketId,bucket){
 				bucketOptions += '<option value="'+bucketId+'" data-name="'+bucket.name+'">'+bucket.name+'</option>';
 			}); 
-			$(this).append('<select></select>');
-			var $select = $(this).children('select');
-			console.log($select);
+			var $parent = $(this).parent(),
+				$select = $('<select></select>').css('display','block').addClass('itembucketContainer');
+			$(this).removeClass('itembucket').addClass('disabledItembucket');
+			$parent.append($select);
+			$parent.append('<button class="save changeBucket">Save</button>');
+			$parent.append('<button class="cancel changeBucket">Cancel</button>');
 			$select.html(bucketOptions);
 
 			function sortAlpha(a,b){  
 				return a.innerHTML > b.innerHTML ? 1 : -1;  
-			};  
-
-			$select.children('option').sort(sortAlpha).appendTo($select).val(item.bucketId).removeClass('itembucket').addClass('itembucketContainer');
+			};
+			$select.children('option').sort(sortAlpha).appendTo($select);
+			$select.val(item.bucketId).removeClass('itembucket');
 		});
-		$('.itembucketContainer .save').live('change click',function(){
+		$('.changeBucket.save').live('change click',function(){
 			var $item = $(this).closest('.item'),
 				item = that.storage.getItem($item.attr('data-id'));
 			item.status = 2;
-			item.bucketId = $(this).closest('.itembucketContainer').children('select').val();
+			item.bucketId = $(this).siblings('.itembucketContainer').val();
 			that.storage.setItem(item.itemId,item,function(){
 				setTimeout(function(){
 					that.drawItems(function(){});
 				},0);
 			});
 		});
-		$('.itembucketContainer .cancel').live('click',function(){
-			var item = that.storage.getItem($(this).closest('.item').attr('data-id')),
-				$container = $(this).closest('.itembucketContainer'),
-				bucket = that.storage.getBucket(item.bucketId);
-			$container.children('select').remove();
-			$container.removeClass('itembucketContainer').addClass('itembucket');
-
-			$container.html(bucket.name);
+		$('.changeBucket.cancel').live('click',function(){
+			$(this).siblings('.disabledItembucket').addClass('itembucket').removeClass('disabledItembucket');
+			$(this).closest('.item').find('.itembucketContainer, .changeBucket').remove();
 		});
 
 		$('.escalate.button, .done.button').live('click',function(){
